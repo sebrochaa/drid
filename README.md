@@ -1,15 +1,15 @@
-DRID - Drug Research Intelligence Dashboard
+**DRID - Drug Research Intelligence Dashboard**
 
 DRID is a web-based pharmaceutical research dashboard designed to organize and explore drug, target, indication, and development data.
 
-Current Status
+**Current Status**
 
 Version: 0.1
 Status: In development
 
 DRID is currently being developed as a portfolio project focused on pharmaceutical research, data organization, and web application development.
 
-Tech Stack
+**Tech Stack**
 
     Python
     Flask
@@ -17,7 +17,7 @@ Tech Stack
     HTML
     CSS
 
-Current Features
+**Current Features**
 
     Pharmaceutical research dashboard
     Drug database
@@ -27,7 +27,7 @@ Current Features
     Development and approval status
     Dashboard analytics
 
-Planned Development
+**Planned Development**
 
 Future versions will incorporate real publicly available pharmaceutical datasets and expand the platform with:
 
@@ -40,7 +40,7 @@ Future versions will incorporate real publicly available pharmaceutical datasets
     Interactive data visualization
     Advanced search and filtering
 
-Project Structure
+**Project Structure**
 
 drid/
 ├── app.py
@@ -51,6 +51,6 @@ drid/
 └── static/
     └── style.css
 
-Disclaimer
+**Disclaimer**
 
 DRID is an educational and portfolio project. It is not intended to provide medical advice or clinical recommendations.
