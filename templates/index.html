@@ -2,16 +2,26 @@
 <html lang="en">
 
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>DRID | Drug Research Intelligence</title>
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
 </head>
 
 
 <body>
+
 
     <!-- =========================================
          SIDEBAR
@@ -26,8 +36,15 @@
             </div>
 
             <div>
-                <h1>DRID</h1>
-                <span>Research Intelligence</span>
+
+                <h1>
+                    DRID
+                </h1>
+
+                <span>
+                    Research Intelligence
+                </span>
+
             </div>
 
         </div>
@@ -40,7 +57,10 @@
             </p>
 
 
-            <a href="/" class="nav-item active">
+            <a
+                href="/"
+                class="nav-item active"
+            >
 
                 <span class="nav-icon">
                     ⌂
@@ -51,7 +71,10 @@
             </a>
 
 
-            <a href="#" class="nav-item">
+            <a
+                href="#"
+                class="nav-item"
+            >
 
                 <span class="nav-icon">
                     ◈
@@ -62,7 +85,10 @@
             </a>
 
 
-            <a href="#" class="nav-item">
+            <a
+                href="#"
+                class="nav-item"
+            >
 
                 <span class="nav-icon">
                     ⌬
@@ -73,7 +99,10 @@
             </a>
 
 
-            <a href="#" class="nav-item">
+            <a
+                href="#"
+                class="nav-item"
+            >
 
                 <span class="nav-icon">
                     ◎
@@ -84,7 +113,10 @@
             </a>
 
 
-            <a href="#" class="nav-item">
+            <a
+                href="#"
+                class="nav-item"
+            >
 
                 <span class="nav-icon">
                     ▤
@@ -97,7 +129,6 @@
         </div>
 
 
-
         <div class="nav-section">
 
             <p class="nav-label">
@@ -105,7 +136,10 @@
             </p>
 
 
-            <a href="#" class="nav-item">
+            <a
+                href="#"
+                class="nav-item"
+            >
 
                 <span class="nav-icon">
                     ↗
@@ -116,7 +150,10 @@
             </a>
 
 
-            <a href="#" class="nav-item">
+            <a
+                href="#"
+                class="nav-item"
+            >
 
                 <span class="nav-icon">
                     ▦
@@ -129,7 +166,6 @@
         </div>
 
 
-
         <div class="sidebar-bottom">
 
             <div class="version">
@@ -139,7 +175,7 @@
                 </span>
 
                 <span>
-                    v0.1
+                    v0.2
                 </span>
 
             </div>
@@ -155,7 +191,7 @@
 
 
     <!-- =========================================
-         MAIN CONTENT
+         MAIN
     ========================================== -->
 
     <main class="main">
@@ -215,7 +251,10 @@
 
         <section class="search-container">
 
-            <form action="/search" method="GET">
+            <form
+                action="/search"
+                method="GET"
+            >
 
                 <div class="search-box">
 
@@ -274,7 +313,7 @@
 
 
                 <strong>
-                    {{ total_drugs }}
+                    {{ total_drugs|default(0) }}
                 </strong>
 
 
@@ -310,7 +349,7 @@
 
 
                 <strong>
-                    {{ approved_drugs }}
+                    {{ approved_drugs|default(0) }}
                 </strong>
 
 
@@ -346,7 +385,7 @@
 
 
                 <strong>
-                    {{ target_count }}
+                    {{ target_count|default(0) }}
                 </strong>
 
 
@@ -382,7 +421,7 @@
 
 
                 <strong>
-                    {{ indication_count }}
+                    {{ indication_count|default(0) }}
                 </strong>
 
 
@@ -430,7 +469,10 @@
                     </div>
 
 
-                    <button class="panel-action">
+                    <button
+                        class="panel-action"
+                        type="button"
+                    >
                         View all →
                     </button>
 
@@ -583,7 +625,6 @@
                     </div>
 
 
-
                     <div class="area-row">
 
                         <span>
@@ -595,7 +636,6 @@
                         </strong>
 
                     </div>
-
 
 
                     <div class="area-row">
@@ -611,7 +651,6 @@
                     </div>
 
 
-
                     <div class="area-row">
 
                         <span>
@@ -623,7 +662,6 @@
                         </strong>
 
                     </div>
-
 
 
                     <div class="area-row">
@@ -686,7 +724,7 @@
 
 
             <!-- =====================================
-                 COMPOUND DATABASE CONTENT
+                 DATABASE CONTENT
             ====================================== -->
 
             <div
@@ -695,14 +733,10 @@
             >
 
 
-                <!-- TABLE -->
-
                 <div class="table-wrapper">
 
                     <table>
 
-
-                        <!-- TABLE HEADER -->
 
                         <thead>
 
@@ -733,10 +767,8 @@
                         </thead>
 
 
-
-                        <!-- TABLE BODY -->
-
                         <tbody>
+
 
                             {% for drug in drugs %}
 
@@ -757,7 +789,10 @@
 
 
                                         <a
-                                            href="{{ url_for('drug_profile', drug_id=drug['id']) }}"
+                                            href="{{ url_for(
+                                                'drug_profile',
+                                                drug_id=drug['id']
+                                            ) }}"
                                             class="compound-link"
                                         >
 
@@ -777,7 +812,7 @@
 
                                     <span class="target">
 
-                                        {{ drug["targets"] or "—" }}
+                                        {{ drug["targets_preview"] }}
 
                                     </span>
 
@@ -789,7 +824,7 @@
 
                                 <td>
 
-                                    {{ drug["indications"] or "—" }}
+                                    {{ drug["indications_preview"] }}
 
                                 </td>
 
@@ -825,8 +860,6 @@
                             {% else %}
 
 
-                            <!-- NO RESULTS -->
-
                             <tr>
 
                                 <td
@@ -852,6 +885,7 @@
 
                             {% endfor %}
 
+
                         </tbody>
 
                     </table>
@@ -869,7 +903,7 @@
 
                     <div class="compound-count">
 
-                        {% if total_drugs > 0 %}
+                        {% if total_drugs|default(0) > 0 %}
 
                             Showing
 
@@ -899,7 +933,7 @@
 
 
 
-                    {% if total_pages > 1 %}
+                    {% if total_pages|default(1) > 1 %}
 
                     <div class="pagination">
 
@@ -907,7 +941,11 @@
                         {% if page > 1 %}
 
                         <a
-                            href="{{ url_for('home', page=page - 1, search=search_query) }}"
+                            href="{{ url_for(
+                                'home',
+                                page=page - 1,
+                                search=search_query
+                            ) }}"
                             class="page-button"
                         >
 
@@ -921,6 +959,7 @@
 
                         {% for page_number in range(1, total_pages + 1) %}
 
+
                             {% if
                                 page_number == 1
                                 or
@@ -932,6 +971,7 @@
                                     page_number <= page + 2
                                 )
                             %}
+
 
                                 <a
                                     href="{{ url_for(
@@ -958,11 +998,14 @@
                                 page_number == page + 3
                             %}
 
+
                                 <span class="page-dots">
                                     ...
                                 </span>
 
+
                             {% endif %}
+
 
                         {% endfor %}
 
@@ -990,8 +1033,8 @@
 
                     {% endif %}
 
-                </div>
 
+                </div>
 
             </div>
 
@@ -1006,7 +1049,7 @@
         <footer>
 
             <span>
-                DRID v0.1
+                DRID v0.2
             </span>
 
             <span>
@@ -1014,7 +1057,7 @@
             </span>
 
             <span>
-                Prototype
+                FDA + PubChem
             </span>
 
         </footer>
@@ -1025,7 +1068,7 @@
 
 
     <!-- =====================================
-         COMPOUND DATABASE TOGGLE
+         DATABASE TOGGLE
     ====================================== -->
 
     <script>

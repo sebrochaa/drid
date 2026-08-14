@@ -246,9 +246,7 @@
             <div class="drug-identity">
 
                 <div class="large-drug-icon">
-
                     {{ drug["name"][0] }}
-
                 </div>
 
 
@@ -290,7 +288,7 @@
         <section class="profile-grid">
 
 
-            <!-- TARGET -->
+            <!-- TARGETS -->
 
             <div class="profile-card panel">
 
@@ -299,29 +297,71 @@
                 </p>
 
 
-                <div class="tag-list">
+                {% if targets %}
 
-                    {% for target in targets %}
+                    <div class="tag-list">
 
-                        <span class="data-tag">
-                            {{ target["name"] }}
-                        </span>
+                        {% for target in targets %}
 
-                    {% else %}
+                            {% if loop.index <= 6 %}
+
+                                <span class="data-tag">
+                                    {{ target["name"] }}
+                                </span>
+
+                            {% endif %}
+
+                        {% endfor %}
+
+                    </div>
+
+
+                    {% if targets|length > 6 %}
+
+                        <details class="data-expand">
+
+                            <summary>
+                                + {{ targets|length - 6 }} more targets
+                            </summary>
+
+
+                            <div class="tag-list">
+
+                                {% for target in targets %}
+
+                                    {% if loop.index > 6 %}
+
+                                        <span class="data-tag">
+                                            {{ target["name"] }}
+                                        </span>
+
+                                    {% endif %}
+
+                                {% endfor %}
+
+                            </div>
+
+                        </details>
+
+                    {% endif %}
+
+                {% else %}
+
+                    <div class="tag-list">
 
                         <span class="data-tag muted-tag">
                             Not yet indexed
                         </span>
 
-                    {% endfor %}
+                    </div>
 
-                </div>
+                {% endif %}
 
             </div>
 
 
 
-            <!-- INDICATION -->
+            <!-- INDICATIONS -->
 
             <div class="profile-card panel">
 
@@ -330,23 +370,65 @@
                 </p>
 
 
-                <div class="tag-list">
+                {% if indications %}
 
-                    {% for indication in indications %}
+                    <div class="tag-list">
 
-                        <span class="data-tag">
-                            {{ indication["name"] }}
-                        </span>
+                        {% for indication in indications %}
 
-                    {% else %}
+                            {% if loop.index <= 6 %}
+
+                                <span class="data-tag">
+                                    {{ indication["name"] }}
+                                </span>
+
+                            {% endif %}
+
+                        {% endfor %}
+
+                    </div>
+
+
+                    {% if indications|length > 6 %}
+
+                        <details class="data-expand">
+
+                            <summary>
+                                + {{ indications|length - 6 }} more indications
+                            </summary>
+
+
+                            <div class="tag-list">
+
+                                {% for indication in indications %}
+
+                                    {% if loop.index > 6 %}
+
+                                        <span class="data-tag">
+                                            {{ indication["name"] }}
+                                        </span>
+
+                                    {% endif %}
+
+                                {% endfor %}
+
+                            </div>
+
+                        </details>
+
+                    {% endif %}
+
+                {% else %}
+
+                    <div class="tag-list">
 
                         <span class="data-tag muted-tag">
                             Not yet indexed
                         </span>
 
-                    {% endfor %}
+                    </div>
 
-                </div>
+                {% endif %}
 
             </div>
 
@@ -376,20 +458,21 @@
 
             <div class="profile-card panel">
 
-    <p class="panel-label">
-        DATA PROVENANCE
-    </p>
+                <p class="panel-label">
+                    DATA PROVENANCE
+                </p>
 
-    <h3>
-        {{ drug["source"] or "DRID" }}
-    </h3>
+                <h3>
+                    {{ drug["source"] or "DRID" }}
+                </h3>
 
-    <p>
-        Regulatory data sourced from the FDA
-        through the openFDA API.
-    </p>
+                <p>
+                    Regulatory data sourced from the FDA
+                    through the openFDA API.
+                </p>
 
-</div>
+            </div>
+
         </section>
 
 
@@ -446,9 +529,7 @@
                     </span>
 
                     <strong>
-
                         {{ drug["molecular_formula"] or "Not available" }}
-
                     </strong>
 
                 </div>
@@ -490,9 +571,7 @@
                     </span>
 
                     <strong>
-
                         {{ drug["pubchem_cid"] or "Not available" }}
-
                     </strong>
 
                 </div>
@@ -545,337 +624,350 @@
 
         </section>
 
-<!-- =========================================
-     DATA SOURCES
-========================================= -->
-
-<section class="panel sources-panel">
-
-    <div class="panel-header">
-
-        <div>
-
-            <p class="panel-label">
-                DATA PROVENANCE
-            </p>
-
-            <h3>
-                Source Records
-            </h3>
-
-            <p class="panel-description">
-                External sources used to construct this DRID record.
-            </p>
-
-        </div>
-
-    </div>
 
 
-    <div class="source-list">
+        <!-- =========================================
+             DATA SOURCES
+        ========================================== -->
 
+        <section class="panel sources-panel">
 
-        <!-- FDA -->
+            <div class="panel-header">
 
-        <div class="source-row">
+                <div>
 
-            <div class="source-icon">
-                FDA
-            </div>
+                    <p class="panel-label">
+                        DATA PROVENANCE
+                    </p>
 
-            <div class="source-information">
+                    <h3>
+                        Source Records
+                    </h3>
 
-                <strong>
-                    U.S. Food & Drug Administration
-                </strong>
+                    <p class="panel-description">
+                        External sources used to construct this DRID record.
+                    </p>
 
-                <span>
-                    Regulatory and product information
-                </span>
-
-            </div>
-
-            <a
-                href="https://open.fda.gov/"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="source-link"
-            >
-                openFDA ↗
-            </a>
-
-        </div>
-
-
-        <!-- PUBCHEM -->
-
-        <div class="source-row">
-
-            <div class="source-icon">
-                PC
-            </div>
-
-            <div class="source-information">
-
-                <strong>
-                    PubChem
-                </strong>
-
-                <span>
-                    Molecular and chemical information
-                </span>
-
-            </div>
-
-            {% if drug["pubchem_cid"] %}
-
-                <a
-                    href="https://pubchem.ncbi.nlm.nih.gov/compound/{{ drug['pubchem_cid'] }}"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="source-link"
-                >
-                    PubChem ↗
-                </a>
-
-            {% else %}
-
-                <span class="source-unavailable">
-                    Not available
-                </span>
-
-            {% endif %}
-
-        </div>
-
-
-        <!-- CLINICALTRIALS.GOV -->
-
-        <div class="source-row">
-
-            <div class="source-icon">
-                CT
-            </div>
-
-            <div class="source-information">
-
-                <strong>
-                    ClinicalTrials.gov
-                </strong>
-
-                <span>
-                    Clinical study and trial registry information
-                </span>
-
-            </div>
-
-            <a
-                href="https://clinicaltrials.gov/"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="source-link"
-            >
-                ClinicalTrials.gov ↗
-            </a>
-
-        </div>
-
-
-    </div>
-
-</section>
-
-<!-- =========================================
-     CLINICAL DEVELOPMENT
-========================================= -->
-
-<section class="panel clinical-panel">
-
-    <div class="panel-header">
-
-        <div>
-
-            <p class="panel-label">
-                CLINICAL DEVELOPMENT
-            </p>
-
-            <h3>
-                Clinical Trials
-            </h3>
-
-            <p class="panel-description">
-                Clinical study records associated with this compound.
-            </p>
-
-        </div>
-
-
-        <div class="trial-summary">
-
-            <div>
-
-                <strong>
-                    {{ trial_count }}
-                </strong>
-
-                <span>
-                    Total studies
-                </span>
+                </div>
 
             </div>
 
 
-            <div>
-
-                <strong>
-                    {{ recruiting_count }}
-                </strong>
-
-                <span>
-                    Active studies
-                </span>
-
-            </div>
-
-        </div>
-
-    </div>
+            <div class="source-list">
 
 
-    {% if clinical_trials %}
+                <!-- FDA -->
+
+                <div class="source-row">
+
+                    <div class="source-icon">
+                        FDA
+                    </div>
 
 
-        <div class="trial-list">
+                    <div class="source-information">
 
+                        <strong>
+                            U.S. Food & Drug Administration
+                        </strong>
 
-            {% for trial in clinical_trials %}
-
-
-                <div class="trial-card">
-
-
-                    <div class="trial-top">
-
-
-                        <div>
-
-                            <span class="trial-id">
-                                {{ trial["nct_id"] }}
-                            </span>
-
-                            <h4>
-                                {{ trial["title"] }}
-                            </h4>
-
-                        </div>
-
-
-                        <span class="trial-status status-{{ trial['status']|lower|replace('_', '-')|replace(' ', '-') }}">
-
-    {{ trial["status"].replace("_", " ") }}
-
-</span>
-
+                        <span>
+                            Regulatory and product information
+                        </span>
 
                     </div>
 
 
+                    <a
+                        href="https://open.fda.gov/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="source-link"
+                    >
+                        openFDA ↗
+                    </a>
 
-                    <div class="trial-details">
-
-
-                        {% if trial["phase"] %}
-
-                            <span>
-                                Phase: {{ trial["phase"] }}
-                            </span>
-
-                        {% endif %}
-
-
-                        {% if trial["study_type"] %}
-
-                            <span>
-                                {{ trial["study_type"] }}
-                            </span>
-
-                        {% endif %}
+                </div>
 
 
-                        {% if trial["conditions"] %}
 
-                            <span>
-                                {{ trial["conditions"] }}
-                            </span>
+                <!-- PUBCHEM -->
 
-                        {% endif %}
+                <div class="source-row">
 
+                    <div class="source-icon">
+                        PC
+                    </div>
+
+
+                    <div class="source-information">
+
+                        <strong>
+                            PubChem
+                        </strong>
+
+                        <span>
+                            Molecular and chemical information
+                        </span>
 
                     </div>
 
 
-
-                    <div class="trial-bottom">
-
-
-                        {% if trial["sponsor"] %}
-
-                            <span>
-
-                                Sponsor:
-                                {{ trial["sponsor"] }}
-
-                            </span>
-
-                        {% endif %}
-
+                    {% if drug["pubchem_cid"] %}
 
                         <a
-                            href="https://clinicaltrials.gov/study/{{ trial['nct_id'] }}"
+                            href="https://pubchem.ncbi.nlm.nih.gov/compound/{{ drug['pubchem_cid'] }}"
                             target="_blank"
                             rel="noopener noreferrer"
                             class="source-link"
                         >
-                            View study ↗
+                            PubChem ↗
                         </a>
 
+                    {% else %}
+
+                        <span class="source-unavailable">
+                            Not available
+                        </span>
+
+                    {% endif %}
+
+                </div>
+
+
+
+                <!-- CLINICALTRIALS.GOV -->
+
+                <div class="source-row">
+
+                    <div class="source-icon">
+                        CT
+                    </div>
+
+
+                    <div class="source-information">
+
+                        <strong>
+                            ClinicalTrials.gov
+                        </strong>
+
+                        <span>
+                            Clinical study and trial registry information
+                        </span>
 
                     </div>
+
+
+                    <a
+                        href="https://clinicaltrials.gov/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="source-link"
+                    >
+                        ClinicalTrials.gov ↗
+                    </a>
+
+                </div>
+
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =========================================
+             CLINICAL DEVELOPMENT
+        ========================================== -->
+
+        <section class="panel clinical-panel">
+
+            <div class="panel-header">
+
+                <div>
+
+                    <p class="panel-label">
+                        CLINICAL DEVELOPMENT
+                    </p>
+
+                    <h3>
+                        Clinical Trials
+                    </h3>
+
+                    <p class="panel-description">
+                        Clinical study records associated with this compound.
+                    </p>
+
+                </div>
+
+
+                <div class="trial-summary">
+
+                    <div>
+
+                        <strong>
+                            {{ trial_count }}
+                        </strong>
+
+                        <span>
+                            Total studies
+                        </span>
+
+                    </div>
+
+
+                    <div>
+
+                        <strong>
+                            {{ recruiting_count }}
+                        </strong>
+
+                        <span>
+                            Active studies
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            {% if clinical_trials %}
+
+
+                <div class="trial-list">
+
+
+                    {% for trial in clinical_trials %}
+
+
+                        <div class="trial-card">
+
+
+                            <div class="trial-top">
+
+
+                                <div>
+
+                                    <span class="trial-id">
+                                        {{ trial["nct_id"] }}
+                                    </span>
+
+                                    <h4>
+                                        {{ trial["title"] }}
+                                    </h4>
+
+                                </div>
+
+
+                                <span
+                                    class="trial-status status-{{ trial['status']|lower|replace('_', '-')|replace(' ', '-') }}"
+                                >
+                                    {{ trial["status"].replace("_", " ") }}
+                                </span>
+
+
+                            </div>
+
+
+
+                            <div class="trial-details">
+
+
+                                {% if trial["phase"] %}
+
+                                    <span>
+                                        Phase: {{ trial["phase"] }}
+                                    </span>
+
+                                {% endif %}
+
+
+                                {% if trial["study_type"] %}
+
+                                    <span>
+                                        {{ trial["study_type"] }}
+                                    </span>
+
+                                {% endif %}
+
+
+                                {% if trial["conditions"] %}
+
+                                    <span>
+                                        {{ trial["conditions"] }}
+                                    </span>
+
+                                {% endif %}
+
+
+                            </div>
+
+
+
+                            <div class="trial-bottom">
+
+
+                                {% if trial["sponsor"] %}
+
+                                    <span>
+                                        Sponsor:
+                                        {{ trial["sponsor"] }}
+                                    </span>
+
+                                {% endif %}
+
+
+                                <a
+                                    href="https://clinicaltrials.gov/study/{{ trial['nct_id'] }}"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    class="source-link"
+                                >
+                                    View study ↗
+                                </a>
+
+
+                            </div>
+
+
+                        </div>
+
+
+                    {% endfor %}
 
 
                 </div>
 
 
-            {% endfor %}
+            {% else %}
 
 
-        </div>
+                <div class="research-placeholder">
+
+                    <div class="placeholder-icon">
+                        +
+                    </div>
+
+                    <h3>
+                        No clinical studies indexed
+                    </h3>
+
+                    <p>
+                        DRID currently has no ClinicalTrials.gov
+                        records associated with this compound.
+                    </p>
+
+                </div>
 
 
-    {% else %}
+            {% endif %}
+
+        </section>
 
 
-        <div class="research-placeholder">
 
-            <div class="placeholder-icon">
-                +
-            </div>
-
-            <h3>
-                No clinical studies indexed
-            </h3>
-
-            <p>
-                DRID currently has no ClinicalTrials.gov
-                records associated with this compound.
-            </p>
-
-        </div>
-
-
-    {% endif %}
-
-</section>
         <!-- =========================================
              RESEARCH OVERVIEW
         ========================================== -->
@@ -923,7 +1015,9 @@
 
 
 
-        <!-- FOOTER -->
+        <!-- =========================================
+             FOOTER
+        ========================================== -->
 
         <footer>
 

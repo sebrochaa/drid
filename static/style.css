@@ -1777,3 +1777,224 @@ footer {
 
     border: 1px solid #fed7aa;
 }
+
+/* =========================================
+   EXPANDABLE TARGET / INDICATION TAGS
+========================================= */
+
+.expand-data {
+    margin-top: 12px;
+}
+
+.expand-data summary {
+    display: inline-block;
+    cursor: pointer;
+    color: var(--accent);
+    font-size: 9px;
+    font-weight: 600;
+    list-style: none;
+    user-select: none;
+}
+
+.expand-data summary::-webkit-details-marker {
+    display: none;
+}
+
+.expand-data summary:hover {
+    text-decoration: underline;
+}
+
+.expanded-tags {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid #edf0f3;
+}
+
+/* =========================================
+   EXPANDABLE DATA TAGS
+========================================= */
+
+.data-expand {
+    margin-top: 12px;
+}
+
+
+.data-expand summary {
+    display: inline-block;
+
+    color: var(--accent);
+
+    font-size: 9px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    list-style: none;
+
+    user-select: none;
+}
+
+
+.data-expand summary::-webkit-details-marker {
+    display: none;
+}
+
+
+.data-expand summary:hover {
+    text-decoration: underline;
+}
+
+
+.data-expand .tag-list {
+    margin-top: 9px;
+}
+
+/* =========================================
+   COMPACT TARGET / INDICATION DISPLAY
+========================================= */
+
+.table-data-summary {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+    max-width: 260px;
+}
+
+
+.table-data-summary .target,
+.table-data-summary .indication-summary {
+    display: block;
+
+    max-width: 190px;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+
+.indication-summary {
+    color: #64748b;
+    font-size: 9px;
+}
+
+
+.more-count {
+    flex-shrink: 0;
+
+    padding: 4px 6px;
+
+    background: #f1f5f9;
+
+    border: 1px solid #e2e8f0;
+
+    border-radius: 4px;
+
+    color: #64748b;
+
+    font-size: 8px;
+
+    font-weight: 600;
+}
+
+
+.table-empty {
+    color: #94a3b8;
+
+    font-size: 10px;
+}
+
+
+/* =========================================
+   DRUG PROFILE COUNTS
+========================================= */
+
+.profile-card-heading {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+}
+
+
+.data-count {
+    min-width: 23px;
+    height: 23px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 0 6px;
+
+    background: #f1f5f9;
+
+    border: 1px solid #e2e8f0;
+
+    border-radius: 5px;
+
+    color: #64748b;
+
+    font-size: 8px;
+
+    font-weight: 700;
+}
+
+
+.more-tag {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 7px 10px;
+
+    background: #eef5ff;
+
+    border: 1px solid #dbeafe;
+
+    border-radius: 6px;
+
+    color: var(--accent);
+
+    font-size: 9px;
+
+    font-weight: 700;
+
+    white-space: nowrap;
+}
+
+
+/* =========================================
+   PREVENT LONG TAGS FROM BREAKING CARDS
+========================================= */
+
+.data-tag {
+    max-width: 220px;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+}
+
+
+/* =========================================
+   COMPOUND TABLE WIDTH
+========================================= */
+
+.database-panel table th:nth-child(2),
+.database-panel table td:nth-child(2) {
+    width: 22%;
+}
+
+
+.database-panel table th:nth-child(3),
+.database-panel table td:nth-child(3) {
+    width: 25%;
+}

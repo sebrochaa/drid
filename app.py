@@ -289,14 +289,18 @@ def home():
 
         total_drugs = conn.execute("""
             SELECT COUNT(*)
+
             FROM drugs
 
             WHERE
+
                 name LIKE ?
 
                 OR EXISTS (
                     SELECT 1
+
                     FROM drug_targets
+
                     JOIN targets
                         ON targets.id = drug_targets.target_id
 
@@ -307,7 +311,9 @@ def home():
 
                 OR EXISTS (
                     SELECT 1
+
                     FROM drug_indications
+
                     JOIN indications
                         ON indications.id = drug_indications.indication_id
 
@@ -315,6 +321,7 @@ def home():
                         drug_indications.drug_id = drugs.id
                         AND indications.name LIKE ?
                 )
+
         """, (
             search_pattern,
             search_pattern,
@@ -327,6 +334,7 @@ def home():
 
         drugs = conn.execute("""
             SELECT
+
                 drugs.id,
                 drugs.name,
                 drugs.phase,
@@ -360,6 +368,7 @@ def home():
 
                 OR EXISTS (
                     SELECT 1
+
                     FROM drug_targets dt
 
                     JOIN targets t
@@ -372,6 +381,7 @@ def home():
 
                 OR EXISTS (
                     SELECT 1
+
                     FROM drug_indications di
 
                     JOIN indications i
@@ -388,6 +398,7 @@ def home():
 
             LIMIT ?
             OFFSET ?
+
         """, (
             search_pattern,
             search_pattern,
@@ -401,7 +412,9 @@ def home():
 
         total_drugs = conn.execute("""
             SELECT COUNT(*)
+
             FROM drugs
+
         """).fetchone()[0]
 
 
@@ -410,6 +423,7 @@ def home():
 
         drugs = conn.execute("""
             SELECT
+
                 drugs.id,
                 drugs.name,
                 drugs.phase,
@@ -443,10 +457,91 @@ def home():
 
             LIMIT ?
             OFFSET ?
+
         """, (
             per_page,
             offset
         )).fetchall()
+
+
+    # =====================================
+    # COMPACT HOME-PAGE PREVIEWS
+    # =====================================
+
+    drug_list = []
+
+
+    for drug in drugs:
+
+        drug_data = dict(drug)
+
+
+        # -----------------------------
+        # TARGET PREVIEW
+        # -----------------------------
+
+        if drug_data["targets"]:
+
+            target_list = [
+                item.strip()
+                for item in drug_data["targets"].split(",")
+                if item.strip()
+            ]
+
+
+            if len(target_list) > 2:
+
+                drug_data["targets_preview"] = (
+                    ", ".join(target_list[:2])
+                    + f" + {len(target_list) - 2} more"
+                )
+
+            else:
+
+                drug_data["targets_preview"] = (
+                    ", ".join(target_list)
+                )
+
+        else:
+
+            drug_data["targets_preview"] = "—"
+
+
+        # -----------------------------
+        # INDICATION PREVIEW
+        # -----------------------------
+
+        if drug_data["indications"]:
+
+            indication_list = [
+                item.strip()
+                for item in drug_data["indications"].split(",")
+                if item.strip()
+            ]
+
+
+            if len(indication_list) > 2:
+
+                drug_data["indications_preview"] = (
+                    ", ".join(indication_list[:2])
+                    + f" + {len(indication_list) - 2} more"
+                )
+
+            else:
+
+                drug_data["indications_preview"] = (
+                    ", ".join(indication_list)
+                )
+
+        else:
+
+            drug_data["indications_preview"] = "—"
+
+
+        drug_list.append(drug_data)
+
+
+    drugs = drug_list
 
 
     # =====================================
@@ -471,20 +566,27 @@ def home():
 
     approved_drugs = conn.execute("""
         SELECT COUNT(*)
+
         FROM drugs
+
         WHERE phase = 'Approved'
+
     """).fetchone()[0]
 
 
     target_count = conn.execute("""
         SELECT COUNT(*)
+
         FROM targets
+
     """).fetchone()[0]
 
 
     indication_count = conn.execute("""
         SELECT COUNT(*)
+
         FROM indications
+
     """).fetchone()[0]
 
 
@@ -494,18 +596,21 @@ def home():
 
     phase_rows = conn.execute("""
         SELECT
+
             phase,
             COUNT(*) AS count
 
         FROM drugs
 
         WHERE
+
             phase IS NOT NULL
             AND TRIM(phase) != ''
 
         GROUP BY phase
 
         ORDER BY count DESC
+
     """).fetchall()
 
 
@@ -522,9 +627,11 @@ def home():
 
 
             phase_distribution.append({
+
                 "phase": row["phase"],
                 "count": row["count"],
                 "percentage": percentage
+
             })
 
 
@@ -536,20 +643,26 @@ def home():
 
         trial_count = conn.execute("""
             SELECT COUNT(*)
+
             FROM clinical_trials
+
         """).fetchone()[0]
 
 
         active_trial_count = conn.execute("""
             SELECT COUNT(*)
+
             FROM clinical_trials
 
             WHERE status IN (
+
                 'RECRUITING',
                 'NOT_YET_RECRUITING',
                 'ENROLLING_BY_INVITATION',
                 'ACTIVE_NOT_RECRUITING'
+
             )
+
         """).fetchone()[0]
 
 
@@ -568,9 +681,11 @@ def home():
 
         enriched_count = conn.execute("""
             SELECT COUNT(*)
+
             FROM drugs
 
             WHERE pubchem_cid IS NOT NULL
+
         """).fetchone()[0]
 
 
@@ -626,7 +741,11 @@ def home():
 @app.route("/search")
 def search():
 
-    query = request.args.get("q", "").strip()
+    query = request.args.get(
+        "q",
+        ""
+    ).strip()
+
 
     return redirect(
         url_for(
@@ -634,6 +753,7 @@ def search():
             search=query
         )
     )
+
 
 # =========================================
 # DRUG PROFILE
@@ -651,8 +771,11 @@ def drug_profile(drug_id):
 
     drug = conn.execute("""
         SELECT *
+
         FROM drugs
+
         WHERE id = ?
+
     """, (drug_id,)).fetchone()
 
 
@@ -668,14 +791,17 @@ def drug_profile(drug_id):
     # =====================================
 
     targets = conn.execute("""
-        SELECT targets.name
+        SELECT
+
+            targets.name
 
         FROM targets
 
         JOIN drug_targets
             ON targets.id = drug_targets.target_id
 
-        WHERE drug_targets.drug_id = ?
+        WHERE
+            drug_targets.drug_id = ?
 
         ORDER BY targets.name
 
@@ -687,14 +813,17 @@ def drug_profile(drug_id):
     # =====================================
 
     indications = conn.execute("""
-        SELECT indications.name
+        SELECT
+
+            indications.name
 
         FROM indications
 
         JOIN drug_indications
             ON indications.id = drug_indications.indication_id
 
-        WHERE drug_indications.drug_id = ?
+        WHERE
+            drug_indications.drug_id = ?
 
         ORDER BY indications.name
 
@@ -705,26 +834,32 @@ def drug_profile(drug_id):
     # CLINICAL TRIALS
     # =====================================
 
-    clinical_trials = conn.execute("""
-        SELECT
+    try:
 
-            nct_id,
-            title,
-            status,
-            phase,
-            conditions,
-            sponsor,
-            study_type,
-            start_date,
-            completion_date
+        clinical_trials = conn.execute("""
+            SELECT
 
-        FROM clinical_trials
+                nct_id,
+                title,
+                status,
+                phase,
+                conditions,
+                sponsor,
+                study_type,
+                start_date,
+                completion_date
 
-        WHERE drug_id = ?
+            FROM clinical_trials
 
-        ORDER BY start_date DESC
+            WHERE drug_id = ?
 
-    """, (drug_id,)).fetchall()
+            ORDER BY start_date DESC
+
+        """, (drug_id,)).fetchall()
+
+    except sqlite3.OperationalError:
+
+        clinical_trials = []
 
 
     # =====================================
@@ -734,27 +869,37 @@ def drug_profile(drug_id):
     trial_count = len(clinical_trials)
 
 
-    recruiting_count = conn.execute("""
-        SELECT COUNT(*)
+    try:
 
-        FROM clinical_trials
+        recruiting_count = conn.execute("""
+            SELECT COUNT(*)
 
-        WHERE drug_id = ?
+            FROM clinical_trials
 
-        AND status IN (
+            WHERE drug_id = ?
 
-            'RECRUITING',
-            'NOT_YET_RECRUITING',
-            'ENROLLING_BY_INVITATION',
-            'ACTIVE_NOT_RECRUITING'
+            AND status IN (
 
-        )
+                'RECRUITING',
+                'NOT_YET_RECRUITING',
+                'ENROLLING_BY_INVITATION',
+                'ACTIVE_NOT_RECRUITING'
 
-    """, (drug_id,)).fetchone()[0]
+            )
+
+        """, (drug_id,)).fetchone()[0]
+
+    except sqlite3.OperationalError:
+
+        recruiting_count = 0
 
 
     conn.close()
 
+
+    # =====================================
+    # RENDER DRUG PROFILE
+    # =====================================
 
     return render_template(
 
