@@ -1170,3 +1170,120 @@ footer {
 
     font-weight: 600;
 }
+/* =================================
+   MOLECULAR PROFILE
+================================= */
+
+.molecular-panel {
+    margin-top: 15px;
+    padding: 22px;
+}
+
+
+.pubchem-badge {
+    padding: 7px 10px;
+
+    background: #f1f5f9;
+
+    border: 1px solid #e2e8f0;
+
+    border-radius: 6px;
+
+    color: #475569;
+
+    font-size: 9px;
+
+    font-weight: 600;
+}
+
+
+.molecular-grid {
+    display: grid;
+
+    grid-template-columns: repeat(4, 1fr);
+
+    gap: 10px;
+
+    margin-top: 20px;
+}
+
+
+.molecular-card {
+    padding: 15px;
+
+    background: #f8fafc;
+
+    border: 1px solid #e5e9ef;
+
+    border-radius: 7px;
+}
+
+
+.molecular-card span {
+    display: block;
+
+    color: #64748b;
+
+    font-size: 9px;
+
+    margin-bottom: 8px;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.04em;
+}
+
+
+.molecular-card strong {
+    display: block;
+
+    color: #1e293b;
+
+    font-size: 12px;
+
+    word-break: break-word;
+}
+
+
+.structure-section {
+    margin-top: 20px;
+
+    padding-top: 20px;
+
+    border-top: 1px solid #e8edf2;
+}
+
+
+.structure-section h4 {
+    margin-top: 7px;
+
+    font-size: 12px;
+}
+
+
+.smiles-box {
+    margin-top: 10px;
+
+    padding: 13px;
+
+    background: #111827;
+
+    border-radius: 6px;
+
+    color: #dbeafe;
+
+    font-family: monospace;
+
+    font-size: 9px;
+
+    line-height: 1.6;
+
+    overflow-x: auto;
+}
+
+
+.muted-tag {
+    color: #94a3b8;
+
+    background: #f8fafc;
+}

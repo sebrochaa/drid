@@ -23,7 +23,9 @@
 <body>
 
 
-    <!-- SIDEBAR -->
+    <!-- =========================================
+         SIDEBAR
+    ========================================== -->
 
     <aside class="sidebar">
 
@@ -55,10 +57,7 @@
             </p>
 
 
-            <a
-                href="/"
-                class="nav-item"
-            >
+            <a href="/" class="nav-item">
 
                 <span class="nav-icon">
                     ⌂
@@ -69,10 +68,7 @@
             </a>
 
 
-            <a
-                href="#"
-                class="nav-item active"
-            >
+            <a href="#" class="nav-item active">
 
                 <span class="nav-icon">
                     ◈
@@ -83,10 +79,7 @@
             </a>
 
 
-            <a
-                href="#"
-                class="nav-item"
-            >
+            <a href="#" class="nav-item">
 
                 <span class="nav-icon">
                     ⌬
@@ -97,10 +90,7 @@
             </a>
 
 
-            <a
-                href="#"
-                class="nav-item"
-            >
+            <a href="#" class="nav-item">
 
                 <span class="nav-icon">
                     ◎
@@ -111,10 +101,7 @@
             </a>
 
 
-            <a
-                href="#"
-                class="nav-item"
-            >
+            <a href="#" class="nav-item">
 
                 <span class="nav-icon">
                     ▤
@@ -134,10 +121,7 @@
             </p>
 
 
-            <a
-                href="#"
-                class="nav-item"
-            >
+            <a href="#" class="nav-item">
 
                 <span class="nav-icon">
                     ↗
@@ -148,10 +132,7 @@
             </a>
 
 
-            <a
-                href="#"
-                class="nav-item"
-            >
+            <a href="#" class="nav-item">
 
                 <span class="nav-icon">
                     ▦
@@ -173,7 +154,7 @@
                 </span>
 
                 <span>
-                    v0.1
+                    v0.2
                 </span>
 
             </div>
@@ -188,7 +169,9 @@
 
 
 
-    <!-- MAIN -->
+    <!-- =========================================
+         MAIN
+    ========================================== -->
 
     <main class="main">
 
@@ -239,7 +222,7 @@
 
 
 
-        <!-- BACK BUTTON -->
+        <!-- BACK -->
 
         <div class="back-container">
 
@@ -254,7 +237,9 @@
 
 
 
-        <!-- DRUG HERO -->
+        <!-- =========================================
+             DRUG HEADER
+        ========================================== -->
 
         <section class="drug-hero panel">
 
@@ -278,7 +263,7 @@
                     </h1>
 
                     <p>
-                        {{ drug["indication"] }}
+                        {{ drug["generic_name"] or "Generic name unavailable" }}
                     </p>
 
                 </div>
@@ -298,7 +283,9 @@
 
 
 
-        <!-- KEY INFORMATION -->
+        <!-- =========================================
+             BASIC INFORMATION
+        ========================================== -->
 
         <section class="profile-grid">
 
@@ -308,24 +295,27 @@
             <div class="profile-card panel">
 
                 <p class="panel-label">
-                    PRIMARY TARGET
+                    MOLECULAR TARGETS
                 </p>
+
 
                 <div class="tag-list">
 
-    {% for target in targets %}
+                    {% for target in targets %}
 
-        <span class="data-tag">
-            {{ target["name"] }}
-        </span>
+                        <span class="data-tag">
+                            {{ target["name"] }}
+                        </span>
 
-    {% endfor %}
+                    {% else %}
 
-</div>
+                        <span class="data-tag muted-tag">
+                            Not yet indexed
+                        </span>
 
-                <p>
-                    Molecular target associated with this compound.
-                </p>
+                    {% endfor %}
+
+                </div>
 
             </div>
 
@@ -336,24 +326,27 @@
             <div class="profile-card panel">
 
                 <p class="panel-label">
-                    INDICATION
+                    INDICATIONS
                 </p>
+
 
                 <div class="tag-list">
 
-    {% for indication in indications %}
+                    {% for indication in indications %}
 
-        <span class="data-tag">
-            {{ indication["name"] }}
-        </span>
+                        <span class="data-tag">
+                            {{ indication["name"] }}
+                        </span>
 
-    {% endfor %}
+                    {% else %}
 
-</div>
+                        <span class="data-tag muted-tag">
+                            Not yet indexed
+                        </span>
 
-                <p>
-                    Current therapeutic indication recorded in DRID.
-                </p>
+                    {% endfor %}
+
+                </div>
 
             </div>
 
@@ -368,31 +361,31 @@
                 </p>
 
                 <h3>
-                    {{ drug["phase"] }}
+                    {{ drug["phase"] or "Unknown" }}
                 </h3>
 
                 <p>
-                    Current development status recorded in the database.
+                    Current development classification.
                 </p>
 
             </div>
 
 
 
-            <!-- STATUS -->
+            <!-- SOURCE -->
 
             <div class="profile-card panel">
 
                 <p class="panel-label">
-                    STATUS
+                    DATA SOURCE
                 </p>
 
                 <h3>
-                    {{ drug["status"] }}
+                    {{ drug["source"] or "DRID" }}
                 </h3>
 
                 <p>
-                    Current status within the DRID database.
+                    Primary source for this record.
                 </p>
 
             </div>
@@ -401,7 +394,162 @@
 
 
 
-        <!-- RESEARCH OVERVIEW -->
+        <!-- =========================================
+             MOLECULAR PROFILE
+        ========================================== -->
+
+        <section class="panel molecular-panel">
+
+            <div class="panel-header">
+
+                <div>
+
+                    <p class="panel-label">
+                        MOLECULAR INTELLIGENCE
+                    </p>
+
+                    <h3>
+                        Molecular Profile
+                    </h3>
+
+                    <p class="panel-description">
+                        Chemical information retrieved from PubChem
+                    </p>
+
+                </div>
+
+
+                {% if drug["pubchem_cid"] %}
+
+                    <div class="pubchem-badge">
+
+                        PubChem CID
+                        {{ drug["pubchem_cid"] }}
+
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+
+
+            <div class="molecular-grid">
+
+
+                <!-- FORMULA -->
+
+                <div class="molecular-card">
+
+                    <span>
+                        Molecular Formula
+                    </span>
+
+                    <strong>
+
+                        {{ drug["molecular_formula"] or "Not available" }}
+
+                    </strong>
+
+                </div>
+
+
+
+                <!-- WEIGHT -->
+
+                <div class="molecular-card">
+
+                    <span>
+                        Molecular Weight
+                    </span>
+
+                    <strong>
+
+                        {% if drug["molecular_weight"] %}
+
+                            {{ drug["molecular_weight"] }} g/mol
+
+                        {% else %}
+
+                            Not available
+
+                        {% endif %}
+
+                    </strong>
+
+                </div>
+
+
+
+                <!-- PUBCHEM -->
+
+                <div class="molecular-card">
+
+                    <span>
+                        PubChem CID
+                    </span>
+
+                    <strong>
+
+                        {{ drug["pubchem_cid"] or "Not available" }}
+
+                    </strong>
+
+                </div>
+
+
+
+                <!-- SOURCE -->
+
+                <div class="molecular-card">
+
+                    <span>
+                        Molecular Data Source
+                    </span>
+
+                    <strong>
+                        PubChem
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- SMILES -->
+
+            <div class="structure-section">
+
+                <div>
+
+                    <p class="panel-label">
+                        CHEMICAL IDENTIFIERS
+                    </p>
+
+                    <h4>
+                        Canonical SMILES
+                    </h4>
+
+                </div>
+
+
+                <div class="smiles-box">
+
+                    {{ drug["canonical_smiles"] or
+                    "Chemical structure identifier unavailable." }}
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =========================================
+             RESEARCH OVERVIEW
+        ========================================== -->
 
         <section class="panel research-overview">
 
@@ -414,7 +562,7 @@
                     </p>
 
                     <h3>
-                        Research Overview
+                        Research Intelligence
                     </h3>
 
                 </div>
@@ -451,7 +599,7 @@
         <footer>
 
             <span>
-                DRID v0.1
+                DRID v0.2
             </span>
 
             <span>
@@ -459,7 +607,7 @@
             </span>
 
             <span>
-                Prototype
+                FDA + PubChem
             </span>
 
         </footer>
