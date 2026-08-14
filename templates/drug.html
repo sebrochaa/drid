@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>{{ drug["name"] }} | DRID</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
+</head>
+
+
+<body>
+
+
+    <!-- SIDEBAR -->
+
+    <aside class="sidebar">
+
+        <div class="brand">
+
+            <div class="brand-mark">
+                D
+            </div>
+
+            <div>
+
+                <h1>
+                    DRID
+                </h1>
+
+                <span>
+                    Research Intelligence
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div class="nav-section">
+
+            <p class="nav-label">
+                WORKSPACE
+            </p>
+
+
+            <a
+                href="/"
+                class="nav-item"
+            >
+
+                <span class="nav-icon">
+                    ⌂
+                </span>
+
+                Overview
+
+            </a>
+
+
+            <a
+                href="#"
+                class="nav-item active"
+            >
+
+                <span class="nav-icon">
+                    ◈
+                </span>
+
+                Compounds
+
+            </a>
+
+
+            <a
+                href="#"
+                class="nav-item"
+            >
+
+                <span class="nav-icon">
+                    ⌬
+                </span>
+
+                Drug Pipeline
+
+            </a>
+
+
+            <a
+                href="#"
+                class="nav-item"
+            >
+
+                <span class="nav-icon">
+                    ◎
+                </span>
+
+                Targets
+
+            </a>
+
+
+            <a
+                href="#"
+                class="nav-item"
+            >
+
+                <span class="nav-icon">
+                    ▤
+                </span>
+
+                Research
+
+            </a>
+
+        </div>
+
+
+        <div class="nav-section">
+
+            <p class="nav-label">
+                ANALYSIS
+            </p>
+
+
+            <a
+                href="#"
+                class="nav-item"
+            >
+
+                <span class="nav-icon">
+                    ↗
+                </span>
+
+                Trends
+
+            </a>
+
+
+            <a
+                href="#"
+                class="nav-item"
+            >
+
+                <span class="nav-icon">
+                    ▦
+                </span>
+
+                Therapeutic Areas
+
+            </a>
+
+        </div>
+
+
+        <div class="sidebar-bottom">
+
+            <div class="version">
+
+                <span>
+                    DRID
+                </span>
+
+                <span>
+                    v0.1
+                </span>
+
+            </div>
+
+            <p>
+                Drug Research Intelligence Dashboard
+            </p>
+
+        </div>
+
+    </aside>
+
+
+
+    <!-- MAIN -->
+
+    <main class="main">
+
+
+        <!-- HEADER -->
+
+        <header class="topbar">
+
+            <div>
+
+                <p class="eyebrow">
+                    COMPOUND PROFILE
+                </p>
+
+                <h2>
+                    {{ drug["name"] }}
+                </h2>
+
+                <p class="subtitle">
+                    Pharmaceutical research record
+                </p>
+
+            </div>
+
+
+            <div class="topbar-right">
+
+                <div class="system-status">
+
+                    <span class="status-dot"></span>
+
+                    System operational
+
+                </div>
+
+
+                <div class="profile">
+
+                    <div class="profile-avatar">
+                        DR
+                    </div>
+
+                </div>
+
+            </div>
+
+        </header>
+
+
+
+        <!-- BACK BUTTON -->
+
+        <div class="back-container">
+
+            <a
+                href="/"
+                class="back-button"
+            >
+                ← Back to dashboard
+            </a>
+
+        </div>
+
+
+
+        <!-- DRUG HERO -->
+
+        <section class="drug-hero panel">
+
+            <div class="drug-identity">
+
+                <div class="large-drug-icon">
+
+                    {{ drug["name"][0] }}
+
+                </div>
+
+
+                <div>
+
+                    <p class="panel-label">
+                        DRUG RECORD
+                    </p>
+
+                    <h1>
+                        {{ drug["name"] }}
+                    </h1>
+
+                    <p>
+                        {{ drug["indication"] }}
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="hero-status">
+
+                <span class="hero-status-dot"></span>
+
+                {{ drug["status"] }}
+
+            </div>
+
+        </section>
+
+
+
+        <!-- KEY INFORMATION -->
+
+        <section class="profile-grid">
+
+
+            <!-- TARGET -->
+
+            <div class="profile-card panel">
+
+                <p class="panel-label">
+                    PRIMARY TARGET
+                </p>
+
+                <div class="tag-list">
+
+    {% for target in targets %}
+
+        <span class="data-tag">
+            {{ target["name"] }}
+        </span>
+
+    {% endfor %}
+
+</div>
+
+                <p>
+                    Molecular target associated with this compound.
+                </p>
+
+            </div>
+
+
+
+            <!-- INDICATION -->
+
+            <div class="profile-card panel">
+
+                <p class="panel-label">
+                    INDICATION
+                </p>
+
+                <div class="tag-list">
+
+    {% for indication in indications %}
+
+        <span class="data-tag">
+            {{ indication["name"] }}
+        </span>
+
+    {% endfor %}
+
+</div>
+
+                <p>
+                    Current therapeutic indication recorded in DRID.
+                </p>
+
+            </div>
+
+
+
+            <!-- DEVELOPMENT -->
+
+            <div class="profile-card panel">
+
+                <p class="panel-label">
+                    DEVELOPMENT PHASE
+                </p>
+
+                <h3>
+                    {{ drug["phase"] }}
+                </h3>
+
+                <p>
+                    Current development status recorded in the database.
+                </p>
+
+            </div>
+
+
+
+            <!-- STATUS -->
+
+            <div class="profile-card panel">
+
+                <p class="panel-label">
+                    STATUS
+                </p>
+
+                <h3>
+                    {{ drug["status"] }}
+                </h3>
+
+                <p>
+                    Current status within the DRID database.
+                </p>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- RESEARCH OVERVIEW -->
+
+        <section class="panel research-overview">
+
+            <div class="panel-header">
+
+                <div>
+
+                    <p class="panel-label">
+                        RESEARCH
+                    </p>
+
+                    <h3>
+                        Research Overview
+                    </h3>
+
+                </div>
+
+            </div>
+
+
+            <div class="research-placeholder">
+
+                <div class="placeholder-icon">
+                    +
+                </div>
+
+
+                <h3>
+                    Research intelligence coming soon
+                </h3>
+
+
+                <p>
+                    Clinical trials, publications, mechanisms,
+                    molecular targets, and related research will
+                    be integrated into this profile in future DRID versions.
+                </p>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- FOOTER -->
+
+        <footer>
+
+            <span>
+                DRID v0.1
+            </span>
+
+            <span>
+                Drug Research Intelligence Dashboard
+            </span>
+
+            <span>
+                Prototype
+            </span>
+
+        </footer>
+
+
+    </main>
+
+
+</body>
+
+</html>

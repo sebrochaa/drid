@@ -927,3 +927,246 @@ footer {
     }
 
 }
+/* ================================
+   DRUG PROFILE
+================================ */
+
+.back-container {
+    margin-top: 25px;
+}
+
+.back-button {
+    color: var(--accent);
+    text-decoration: none;
+    font-size: 10px;
+}
+
+.back-button:hover {
+    text-decoration: underline;
+}
+
+
+.drug-hero {
+    margin-top: 18px;
+
+    padding: 25px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+}
+
+
+.drug-identity {
+    display: flex;
+
+    align-items: center;
+
+    gap: 18px;
+}
+
+
+.large-drug-icon {
+    width: 58px;
+    height: 58px;
+
+    border-radius: 12px;
+
+    background: #eaf2ff;
+
+    color: var(--accent);
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    font-size: 22px;
+
+    font-weight: 700;
+}
+
+
+.drug-identity h1 {
+    font-size: 25px;
+
+    margin-bottom: 6px;
+}
+
+
+.drug-identity p:last-child {
+    color: var(--muted);
+
+    font-size: 11px;
+}
+
+
+.hero-status {
+    display: flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    color: #3f8a68;
+
+    background: #eefaf5;
+
+    padding: 8px 12px;
+
+    border-radius: 6px;
+
+    font-size: 10px;
+}
+
+
+.hero-status-dot {
+    width: 6px;
+    height: 6px;
+
+    border-radius: 50%;
+
+    background: #2ab678;
+}
+
+
+.profile-grid {
+    display: grid;
+
+    grid-template-columns: repeat(2, 1fr);
+
+    gap: 15px;
+
+    margin-top: 15px;
+}
+
+
+.profile-card {
+    padding: 21px;
+}
+
+
+.profile-card h3 {
+    font-size: 17px;
+
+    margin-top: 10px;
+}
+
+
+.profile-card p:last-child {
+    color: var(--muted);
+
+    font-size: 10px;
+
+    line-height: 1.5;
+
+    margin-top: 8px;
+}
+
+
+.research-overview {
+    margin-top: 15px;
+
+    padding-bottom: 25px;
+}
+
+
+.research-placeholder {
+    margin: 25px 20px 5px;
+
+    padding: 35px;
+
+    text-align: center;
+
+    background: #f8fafc;
+
+    border: 1px dashed #dce2e8;
+
+    border-radius: 8px;
+}
+
+
+.placeholder-icon {
+    width: 32px;
+    height: 32px;
+
+    margin: 0 auto 12px;
+
+    border-radius: 50%;
+
+    background: #eaf2ff;
+
+    color: var(--accent);
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    font-size: 18px;
+}
+
+
+.research-placeholder h3 {
+    font-size: 13px;
+}
+
+
+.research-placeholder p {
+    max-width: 550px;
+
+    margin: 8px auto 0;
+
+    color: var(--muted);
+
+    font-size: 10px;
+
+    line-height: 1.6;
+}
+
+
+.compound-link {
+    color: #26313e;
+
+    text-decoration: none;
+
+    font-size: 10px;
+
+    font-weight: 600;
+}
+
+
+.compound-link:hover {
+    color: var(--accent);
+}
+/* ================================
+   DATA TAGS
+================================ */
+
+.tag-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin-top: 12px;
+}
+
+
+.data-tag {
+    display: inline-block;
+
+    padding: 7px 10px;
+
+    background: #f1f5f9;
+
+    border: 1px solid #e2e8f0;
+
+    border-radius: 6px;
+
+    color: #334155;
+
+    font-size: 10px;
+
+    font-weight: 600;
+}
