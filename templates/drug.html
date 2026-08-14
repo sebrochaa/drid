@@ -376,20 +376,20 @@
 
             <div class="profile-card panel">
 
-                <p class="panel-label">
-                    DATA SOURCE
-                </p>
+    <p class="panel-label">
+        DATA PROVENANCE
+    </p>
 
-                <h3>
-                    {{ drug["source"] or "DRID" }}
-                </h3>
+    <h3>
+        {{ drug["source"] or "DRID" }}
+    </h3>
 
-                <p>
-                    Primary source for this record.
-                </p>
+    <p>
+        Regulatory data sourced from the FDA
+        through the openFDA API.
+    </p>
 
-            </div>
-
+</div>
         </section>
 
 
@@ -545,7 +545,118 @@
 
         </section>
 
+<!-- =========================================
+     DATA SOURCES
+========================================= -->
 
+<section class="panel sources-panel">
+
+    <div class="panel-header">
+
+        <div>
+
+            <p class="panel-label">
+                DATA PROVENANCE
+            </p>
+
+            <h3>
+                Source Records
+            </h3>
+
+            <p class="panel-description">
+                External sources used to construct this DRID record.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="source-list">
+
+
+        <!-- FDA -->
+
+        <div class="source-row">
+
+            <div class="source-icon">
+                FDA
+            </div>
+
+
+            <div class="source-information">
+
+                <strong>
+                    U.S. Food & Drug Administration
+                </strong>
+
+                <span>
+                    Regulatory and product information
+                </span>
+
+            </div>
+
+
+            <a
+                href="https://open.fda.gov/"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="source-link"
+            >
+                openFDA ↗
+            </a>
+
+        </div>
+
+
+
+        <!-- PUBCHEM -->
+
+        <div class="source-row">
+
+            <div class="source-icon">
+                PC
+            </div>
+
+
+            <div class="source-information">
+
+                <strong>
+                    PubChem
+                </strong>
+
+                <span>
+                    Molecular and chemical information
+                </span>
+
+            </div>
+
+
+            {% if drug["pubchem_cid"] %}
+
+                <a
+                    href="https://pubchem.ncbi.nlm.nih.gov/compound/{{ drug['pubchem_cid'] }}"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="source-link"
+                >
+                    PubChem ↗
+                </a>
+
+            {% else %}
+
+                <span class="source-unavailable">
+                    Not available
+                </span>
+
+            {% endif %}
+
+        </div>
+
+
+    </div>
+
+</section>
 
         <!-- =========================================
              RESEARCH OVERVIEW

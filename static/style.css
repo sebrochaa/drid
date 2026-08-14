@@ -1287,3 +1287,111 @@ footer {
 
     background: #f8fafc;
 }
+/* =================================
+   DATA SOURCES
+================================= */
+
+.sources-panel {
+    margin-top: 15px;
+    padding: 22px;
+}
+
+
+.source-list {
+    margin-top: 18px;
+
+    border: 1px solid #e5e9ef;
+
+    border-radius: 7px;
+
+    overflow: hidden;
+}
+
+
+.source-row {
+    display: flex;
+
+    align-items: center;
+
+    gap: 13px;
+
+    padding: 14px 16px;
+
+    background: #ffffff;
+
+    border-bottom: 1px solid #edf0f3;
+}
+
+
+.source-row:last-child {
+    border-bottom: none;
+}
+
+
+.source-icon {
+    width: 35px;
+    height: 35px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 6px;
+
+    background: #f1f5f9;
+
+    color: #475569;
+
+    font-size: 8px;
+
+    font-weight: 700;
+}
+
+
+.source-information {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 4px;
+
+    flex: 1;
+}
+
+
+.source-information strong {
+    color: #1e293b;
+
+    font-size: 10px;
+}
+
+
+.source-information span {
+    color: #64748b;
+
+    font-size: 9px;
+}
+
+
+.source-link {
+    color: var(--accent);
+
+    text-decoration: none;
+
+    font-size: 9px;
+
+    font-weight: 600;
+}
+
+
+.source-link:hover {
+    text-decoration: underline;
+}
+
+
+.source-unavailable {
+    color: #94a3b8;
+
+    font-size: 9px;
+}
