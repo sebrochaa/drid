@@ -1395,3 +1395,385 @@ footer {
 
     font-size: 9px;
 }
+/* =================================
+   CLINICAL DEVELOPMENT
+================================= */
+
+.clinical-panel {
+    margin-top: 15px;
+
+    padding: 22px;
+}
+
+
+.trial-summary {
+    display: flex;
+
+    gap: 25px;
+}
+
+
+.trial-summary div {
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: flex-end;
+
+    gap: 3px;
+}
+
+
+.trial-summary strong {
+    color: #1e293b;
+
+    font-size: 18px;
+}
+
+
+.trial-summary span {
+    color: #64748b;
+
+    font-size: 8px;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.05em;
+}
+
+
+.trial-list {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 8px;
+
+    margin-top: 20px;
+}
+
+
+.trial-card {
+    padding: 15px;
+
+    border: 1px solid #e5e9ef;
+
+    border-radius: 7px;
+
+    background: #ffffff;
+}
+
+
+.trial-top {
+    display: flex;
+
+    justify-content: space-between;
+
+    gap: 20px;
+}
+
+
+.trial-id {
+    color: var(--accent);
+
+    font-size: 9px;
+
+    font-weight: 700;
+}
+
+
+.trial-card h4 {
+    margin-top: 6px;
+
+    color: #1e293b;
+
+    font-size: 11px;
+
+    line-height: 1.5;
+
+    font-weight: 600;
+}
+
+
+.trial-status {
+    height: fit-content;
+
+    padding: 5px 8px;
+
+    background: #f1f5f9;
+
+    border-radius: 5px;
+
+    color: #475569;
+
+    font-size: 8px;
+
+    font-weight: 700;
+
+    white-space: nowrap;
+}
+
+
+.trial-details {
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 7px;
+
+    margin-top: 12px;
+}
+
+
+.trial-details span {
+    padding: 5px 7px;
+
+    background: #f8fafc;
+
+    border: 1px solid #edf0f3;
+
+    border-radius: 4px;
+
+    color: #64748b;
+
+    font-size: 8px;
+}
+
+
+.trial-bottom {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-top: 13px;
+
+    padding-top: 11px;
+
+    border-top: 1px solid #edf0f3;
+
+    color: #64748b;
+
+    font-size: 8px;
+}
+
+/* =========================================
+   COMPOUND TABLE FOOTER
+========================================= */
+
+.compound-table-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    margin-top: 16px;
+    padding-top: 14px;
+
+    border-top: 1px solid #edf0f3;
+}
+
+
+.compound-count {
+    color: #94a3b8;
+
+    font-size: 9px;
+}
+
+
+.compound-count strong {
+    color: #64748b;
+
+    font-weight: 600;
+}
+
+
+/* =========================================
+   PAGINATION
+========================================= */
+
+.pagination {
+    display: flex;
+    align-items: center;
+
+    gap: 4px;
+}
+
+
+.page-button {
+    min-width: 27px;
+    height: 27px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid #e2e8f0;
+
+    border-radius: 5px;
+
+    background: #ffffff;
+
+    color: #64748b;
+
+    font-size: 9px;
+
+    text-decoration: none;
+
+    transition:
+        background 0.15s ease,
+        border-color 0.15s ease,
+        color 0.15s ease;
+}
+
+
+.page-button:hover {
+    background: #f8fafc;
+
+    border-color: #cbd5e1;
+
+    color: #334155;
+}
+
+
+.active-page {
+    background: var(--accent);
+
+    border-color: var(--accent);
+
+    color: #ffffff;
+}
+
+
+.active-page:hover {
+    background: var(--accent);
+
+    border-color: var(--accent);
+
+    color: #ffffff;
+}
+
+
+.page-dots {
+    padding: 0 3px;
+
+    color: #94a3b8;
+
+    font-size: 9px;
+}
+
+/* =========================================
+   COLLAPSIBLE COMPOUND DATABASE
+========================================= */
+
+.compound-database-content {
+    transition: opacity 0.2s ease;
+}
+
+/* =========================================
+   CLINICAL TRIAL STATUS COLORS
+========================================= */
+
+.trial-status {
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+    height: fit-content;
+
+    padding: 5px 9px;
+
+    border-radius: 5px;
+
+    font-size: 8px;
+
+    font-weight: 700;
+
+    white-space: nowrap;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.03em;
+}
+
+
+/* STATUS DOT */
+
+.trial-status::before {
+    content: "";
+
+    width: 5px;
+    height: 5px;
+
+    border-radius: 50%;
+
+    background: currentColor;
+}
+
+
+/* RECRUITING */
+
+.status-recruiting {
+    background: #ecfdf5;
+
+    color: #16845a;
+
+    border: 1px solid #d1fae5;
+}
+
+
+/* NOT YET RECRUITING */
+
+.status-not-yet-recruiting {
+    background: #eff6ff;
+
+    color: #2563eb;
+
+    border: 1px solid #dbeafe;
+}
+
+
+/* ACTIVE NOT RECRUITING */
+
+.status-active-not-recruiting {
+    background: #f0fdf4;
+
+    color: #15803d;
+
+    border: 1px solid #dcfce7;
+}
+
+
+/* ENROLLING BY INVITATION */
+
+.status-enrolling-by-invitation {
+    background: #f5f3ff;
+
+    color: #7c3aed;
+
+    border: 1px solid #ede9fe;
+}
+
+
+/* COMPLETED */
+
+.status-completed {
+    background: #f1f5f9;
+
+    color: #64748b;
+
+    border: 1px solid #e2e8f0;
+}
+
+
+/* UNKNOWN */
+
+.status-unknown {
+    background: #fff7ed;
+
+    color: #c2410c;
+
+    border: 1px solid #fed7aa;
+}

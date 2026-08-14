@@ -672,164 +672,326 @@
                 </div>
 
 
-                <button class="panel-action">
-                    Explore database →
+                <button
+                    class="panel-action"
+                    id="compoundToggle"
+                    type="button"
+                    onclick="toggleCompoundDatabase()"
+                >
+                    Collapse ↑
                 </button>
 
             </div>
 
 
 
-            <!-- TABLE -->
+            <!-- =====================================
+                 COMPOUND DATABASE CONTENT
+            ====================================== -->
 
-            <div class="table-wrapper">
-
-                <table>
-
-
-                    <!-- TABLE HEADER -->
-
-                    <thead>
-
-                        <tr>
-
-                            <th>
-                                COMPOUND
-                            </th>
-
-                            <th>
-                                TARGET
-                            </th>
-
-                            <th>
-                                INDICATION
-                            </th>
-
-                            <th>
-                                PHASE
-                            </th>
-
-                            <th>
-                                STATUS
-                            </th>
-
-                        </tr>
-
-                    </thead>
+            <div
+                class="compound-database-content"
+                id="compoundDatabaseContent"
+            >
 
 
+                <!-- TABLE -->
 
-                    <!-- TABLE BODY -->
+                <div class="table-wrapper">
 
-                    <tbody>
-
-                        {% for drug in drugs %}
-
-                        <tr>
+                    <table>
 
 
-                            <!-- COMPOUND -->
+                        <!-- TABLE HEADER -->
 
-                            <td>
+                        <thead>
 
-                                <div class="compound-name">
+                            <tr>
 
-                                    <div class="compound-icon">
+                                <th>
+                                    COMPOUND
+                                </th>
 
-                                        {{ drug["name"][0] }}
+                                <th>
+                                    TARGET
+                                </th>
+
+                                <th>
+                                    INDICATION
+                                </th>
+
+                                <th>
+                                    PHASE
+                                </th>
+
+                                <th>
+                                    STATUS
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+
+                        <!-- TABLE BODY -->
+
+                        <tbody>
+
+                            {% for drug in drugs %}
+
+                            <tr>
+
+
+                                <!-- COMPOUND -->
+
+                                <td>
+
+                                    <div class="compound-name">
+
+                                        <div class="compound-icon">
+
+                                            {{ drug["name"][0] }}
+
+                                        </div>
+
+
+                                        <a
+                                            href="{{ url_for('drug_profile', drug_id=drug['id']) }}"
+                                            class="compound-link"
+                                        >
+
+                                            {{ drug["name"] }}
+
+                                        </a>
 
                                     </div>
 
-
-                                    <a
-    href="{{ url_for('drug_profile', drug_id=drug['id']) }}"
-    class="compound-link"
->
-    {{ drug["name"] }}
-</a>
-
-                                </div>
-
-                            </td>
+                                </td>
 
 
 
-                            <!-- TARGET -->
+                                <!-- TARGET -->
 
-                            <td>
+                                <td>
 
-                                <span class="target">
+                                    <span class="target">
 
-                                    {{ drug["targets"] }}
+                                        {{ drug["targets"] or "—" }}
 
-                                </span>
+                                    </span>
 
-                            </td>
-
-
-
-                            <!-- INDICATION -->
-
-                            <td>
-
-                                {{ drug["indications"] }}
-
-                            </td>
+                                </td>
 
 
 
-                            <!-- PHASE -->
+                                <!-- INDICATION -->
 
-                            <td>
+                                <td>
 
-                                {{ drug["phase"] }}
+                                    {{ drug["indications"] or "—" }}
 
-                            </td>
-
-
-
-                            <!-- STATUS -->
-
-                            <td>
-
-                                <span class="table-status">
-
-                                    <span></span>
-
-                                    {{ drug["status"] }}
-
-                                </span>
-
-                            </td>
+                                </td>
 
 
-                        </tr>
 
+                                <!-- PHASE -->
+
+                                <td>
+
+                                    {{ drug["phase"] or "—" }}
+
+                                </td>
+
+
+
+                                <!-- STATUS -->
+
+                                <td>
+
+                                    <span class="table-status">
+
+                                        <span></span>
+
+                                        {{ drug["status"] or "Unknown" }}
+
+                                    </span>
+
+                                </td>
+
+                            </tr>
+
+
+                            {% else %}
+
+
+                            <!-- NO RESULTS -->
+
+                            <tr>
+
+                                <td
+                                    colspan="5"
+                                    class="empty"
+                                >
+
+                                    {% if search_query %}
+
+                                        No compounds found for
+                                        "<strong>{{ search_query }}</strong>".
+
+                                    {% else %}
+
+                                        No compounds found.
+
+                                    {% endif %}
+
+                                </td>
+
+                            </tr>
+
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+
+
+                <!-- =====================================
+                     TABLE FOOTER
+                ====================================== -->
+
+                <div class="compound-table-footer">
+
+
+                    <div class="compound-count">
+
+                        {% if total_drugs > 0 %}
+
+                            Showing
+
+                            <strong>
+                                {{ ((page - 1) * per_page) + 1 }}
+                            </strong>
+
+                            –
+
+                            <strong>
+                                {{ [page * per_page, total_drugs] | min }}
+                            </strong>
+
+                            of
+
+                            <strong>
+                                {{ total_drugs }}
+                            </strong>
 
                         {% else %}
 
+                            No compounds
 
-                        <!-- NO RESULTS -->
+                        {% endif %}
 
-                        <tr>
+                    </div>
 
-                            <td
-                                colspan="5"
-                                class="empty"
-                            >
 
-                                No compounds found.
 
-                            </td>
+                    {% if total_pages > 1 %}
 
-                        </tr>
+                    <div class="pagination">
 
+
+                        {% if page > 1 %}
+
+                        <a
+                            href="{{ url_for('home', page=page - 1, search=search_query) }}"
+                            class="page-button"
+                        >
+
+                            ←
+
+                        </a>
+
+                        {% endif %}
+
+
+
+                        {% for page_number in range(1, total_pages + 1) %}
+
+                            {% if
+                                page_number == 1
+                                or
+                                page_number == total_pages
+                                or
+                                (
+                                    page_number >= page - 2
+                                    and
+                                    page_number <= page + 2
+                                )
+                            %}
+
+                                <a
+                                    href="{{ url_for(
+                                        'home',
+                                        page=page_number,
+                                        search=search_query
+                                    ) }}"
+                                    class="
+                                        page-button
+                                        {% if page_number == page %}
+                                            active-page
+                                        {% endif %}
+                                    "
+                                >
+
+                                    {{ page_number }}
+
+                                </a>
+
+
+                            {% elif
+                                page_number == page - 3
+                                or
+                                page_number == page + 3
+                            %}
+
+                                <span class="page-dots">
+                                    ...
+                                </span>
+
+                            {% endif %}
 
                         {% endfor %}
 
-                    </tbody>
 
-                </table>
+
+                        {% if page < total_pages %}
+
+                        <a
+                            href="{{ url_for(
+                                'home',
+                                page=page + 1,
+                                search=search_query
+                            ) }}"
+                            class="page-button"
+                        >
+
+                            →
+
+                        </a>
+
+                        {% endif %}
+
+
+                    </div>
+
+                    {% endif %}
+
+                </div>
+
 
             </div>
 
@@ -859,6 +1021,47 @@
 
 
     </main>
+
+
+
+    <!-- =====================================
+         COMPOUND DATABASE TOGGLE
+    ====================================== -->
+
+    <script>
+
+        function toggleCompoundDatabase() {
+
+            const content =
+                document.getElementById(
+                    "compoundDatabaseContent"
+                );
+
+            const button =
+                document.getElementById(
+                    "compoundToggle"
+                );
+
+
+            if (content.style.display === "none") {
+
+                content.style.display = "block";
+
+                button.textContent =
+                    "Collapse ↑";
+
+            } else {
+
+                content.style.display = "none";
+
+                button.textContent =
+                    "Expand ↓";
+
+            }
+
+        }
+
+    </script>
 
 
 </body>

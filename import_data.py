@@ -294,7 +294,7 @@ def main():
     # Fetch FDA records
 
     records = get_fda_records(
-        limit=100
+        limit=1000
     )
 
 
