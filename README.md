@@ -1,56 +1,99 @@
-**DRID - Drug Research Intelligence Dashboard**
+# DRID — Drug Research Intelligence Dashboard
 
-DRID is a web-based pharmaceutical research dashboard designed to organize and explore drug, target, indication, and development data.
+DRID is a web-based pharmaceutical research intelligence dashboard designed to organize, connect, and explore drug, molecular target, indication, clinical trial, and pharmaceutical development data.
 
-**Current Status**
+The project is being developed as a long-term portfolio project combining **pharmaceutical science, biomedical data, and software development**.
 
-Version: 0.1
-Status: In development
+## Current Status
 
-DRID is currently being developed as a portfolio project focused on pharmaceutical research, data organization, and web application development.
+**Version:** 0.2  
+**Status:** In active development
 
-**Tech Stack**
+DRID has progressed beyond the initial prototype and now integrates multiple publicly available pharmaceutical and biomedical data sources.
 
-    Python
-    Flask
-    SQLite
-    HTML
-    CSS
+## Tech Stack
 
-**Current Features**
+- Python
+- Flask
+- SQLite
+- HTML
+- CSS
+- Jinja2
+- REST APIs
 
-    Pharmaceutical research dashboard
-    Drug database
-    Drug search
-    Drug targets
-    Drug indications
-    Development and approval status
-    Dashboard analytics
+## Current Features
 
-**Planned Development**
+### Pharmaceutical Database
 
-Future versions will incorporate real publicly available pharmaceutical datasets and expand the platform with:
+- Drug database containing 1,000+ compounds
+- Drug search functionality
+- Drug detail/profile pages
+- Development phase and regulatory status
+- Drug-target relationships
+- Drug-indication relationships
 
-    Drug detail pages
-    Clinical trial information
-    Research publications
-    Molecular targets
-    Therapeutic-area analysis
-    Drug development pipelines
-    Interactive data visualization
-    Advanced search and filtering
+### Molecular Intelligence
 
-**Project Structure**
+- PubChem integration
+- PubChem Compound IDs
+- Molecular formulas
+- Molecular weights
+- Canonical SMILES
+- Molecular data provenance
 
+### Clinical Research
+
+- ClinicalTrials.gov integration
+- Clinical trial records associated with compounds
+- Trial status
+- Clinical development phase
+- Study type
+- Study conditions
+- Study sponsors
+- Trial counts and active-trial statistics
+
+### Dashboard Analytics
+
+- Total compounds
+- Approved drugs
+- Research targets
+- Indications
+- Clinical trial statistics
+- PubChem enrichment statistics
+- Development-phase distribution
+- Paginated compound database
+- Search across compounds, targets, and indications
+
+### Data Integration
+
+DRID currently works with publicly available data from sources including:
+
+- U.S. Food & Drug Administration / openFDA
+- PubChem
+- ClinicalTrials.gov
+- ChEMBL
+
+The database currently contains approximately:
+
+- **1,140 drugs**
+- **199 targets**
+- **694 drug-target relationships**
+- **1,541 indications**
+- **13,049 drug-indication relationships**
+- **14,169 clinical trials**
+
+These numbers will change as the database continues to be enriched.
+
+## Project Structure
+
+```text
 drid/
 ├── app.py
 ├── README.md
 ├── .gitignore
+├── drid.db
 ├── templates/
-│   └── index.html
+│   ├── index.html
+│   └── drug.html
 └── static/
     └── style.css
-
-**Disclaimer**
-
-DRID is an educational and portfolio project. It is not intended to provide medical advice or clinical recommendations.
