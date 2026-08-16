@@ -3,7 +3,9 @@ import requests
 import time
 
 
-DATABASE = "drid.db"
+from config import DATABASE_PATH
+
+DATABASE = str(DATABASE_PATH)
 
 PUBCHEM_URL = (
     "https://pubchem.ncbi.nlm.nih.gov/rest/pug"

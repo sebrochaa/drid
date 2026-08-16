@@ -1,6 +1,7 @@
 import sqlite3
+from config import DATABASE_PATH
 
-conn = sqlite3.connect("drid.db")
+conn = sqlite3.connect(DATABASE_PATH)
 conn.row_factory = sqlite3.Row
 
 drugs = ["Aspirin", "Metformin", "Pembrolizumab", "Semaglutide", "Tirzepatide"]

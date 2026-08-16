@@ -3,7 +3,9 @@ import requests
 import time
 
 
-DATABASE = "drid.db"
+from config import DATABASE_PATH
+
+DATABASE = str(DATABASE_PATH)
 
 CLINICAL_TRIALS_URL = "https://clinicaltrials.gov/api/v2/studies"
 

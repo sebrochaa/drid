@@ -2,3 +2,6 @@ __pycache__/
 *.pyc
 drid.db
 .env
+.venv/
+.pytest_cache/
+test_drid.db

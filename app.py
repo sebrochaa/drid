@@ -3,736 +3,375 @@ import sqlite3
 
 app = Flask(__name__)
 
-DATABASE = "drid.db"
+from flask import Flask, render_template, request, redirect, url_for
+import sqlite3
 
+from config import DEBUG
+from database import get_db, initialize_database
 
-# =========================================
-# DATABASE CONNECTION
-# =========================================
 
-def get_db():
+app = Flask(__name__)
 
-    conn = sqlite3.connect(DATABASE)
-
-    conn.row_factory = sqlite3.Row
-
-    return conn
-
-
-# =========================================
-# DATABASE SETUP
-# =========================================
-
-def initialize_database():
-
-    conn = get_db()
-
-    # -----------------------------
-    # DRUGS
-    # -----------------------------
-
-    conn.execute("""
-        CREATE TABLE IF NOT EXISTS drugs (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT NOT NULL,
-            phase TEXT,
-            status TEXT
-        )
-    """)
-
-
-    # -----------------------------
-    # TARGETS
-    # -----------------------------
-
-    conn.execute("""
-        CREATE TABLE IF NOT EXISTS targets (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT NOT NULL UNIQUE
-        )
-    """)
-
-
-    # -----------------------------
-    # INDICATIONS
-    # -----------------------------
-
-    conn.execute("""
-        CREATE TABLE IF NOT EXISTS indications (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT NOT NULL UNIQUE
-        )
-    """)
-
-
-    # -----------------------------
-    # DRUG ↔ TARGET
-    # -----------------------------
-
-    conn.execute("""
-        CREATE TABLE IF NOT EXISTS drug_targets (
-            drug_id INTEGER,
-            target_id INTEGER,
-
-            PRIMARY KEY (drug_id, target_id),
-
-            FOREIGN KEY (drug_id)
-                REFERENCES drugs(id),
-
-            FOREIGN KEY (target_id)
-                REFERENCES targets(id)
-        )
-    """)
-
-
-    # -----------------------------
-    # DRUG ↔ INDICATION
-    # -----------------------------
-
-    conn.execute("""
-        CREATE TABLE IF NOT EXISTS drug_indications (
-            drug_id INTEGER,
-            indication_id INTEGER,
-
-            PRIMARY KEY (drug_id, indication_id),
-
-            FOREIGN KEY (drug_id)
-                REFERENCES drugs(id),
-
-            FOREIGN KEY (indication_id)
-                REFERENCES indications(id)
-        )
-    """)
-
-
-    # =====================================
-    # SAMPLE DATA
-    # =====================================
-
-    drug_count = conn.execute(
-        "SELECT COUNT(*) FROM drugs"
-    ).fetchone()[0]
-
-
-    if drug_count == 0:
-
-        drugs = [
-            ("Aspirin", "Approved", "Established"),
-            ("Metformin", "Approved", "Established"),
-            ("Pembrolizumab", "Approved", "Established"),
-            ("Semaglutide", "Approved", "Established"),
-            ("Tirzepatide", "Approved", "Established")
-        ]
-
-
-        conn.executemany("""
-            INSERT INTO drugs
-            (name, phase, status)
-            VALUES (?, ?, ?)
-        """, drugs)
-
-
-        targets = [
-            ("COX-1",),
-            ("COX-2",),
-            ("AMPK",),
-            ("PD-1",),
-            ("GLP-1 receptor",),
-            ("GIP receptor",)
-        ]
-
-
-        conn.executemany("""
-            INSERT OR IGNORE INTO targets
-            (name)
-            VALUES (?)
-        """, targets)
-
-
-        indications = [
-            ("Pain",),
-            ("Inflammation",),
-            ("Cardiovascular prevention",),
-            ("Type 2 diabetes",),
-            ("Obesity",),
-            ("Cancer",)
-        ]
-
-
-        conn.executemany("""
-            INSERT OR IGNORE INTO indications
-            (name)
-            VALUES (?)
-        """, indications)
-
-
-        relationships = [
-
-            (1, "COX-1"),
-            (1, "COX-2"),
-
-            (2, "AMPK"),
-
-            (3, "PD-1"),
-
-            (4, "GLP-1 receptor"),
-
-            (5, "GLP-1 receptor"),
-            (5, "GIP receptor")
-        ]
-
-
-        for drug_id, target_name in relationships:
-
-            target = conn.execute("""
-                SELECT id
-                FROM targets
-                WHERE name = ?
-            """, (target_name,)).fetchone()
-
-
-            conn.execute("""
-                INSERT OR IGNORE INTO drug_targets
-                (drug_id, target_id)
-                VALUES (?, ?)
-            """, (
-                drug_id,
-                target["id"]
-            ))
-
-
-        indications_relationships = [
-
-            (1, "Pain"),
-            (1, "Inflammation"),
-            (1, "Cardiovascular prevention"),
-
-            (2, "Type 2 diabetes"),
-
-            (3, "Cancer"),
-
-            (4, "Type 2 diabetes"),
-            (4, "Obesity"),
-
-            (5, "Type 2 diabetes"),
-            (5, "Obesity")
-        ]
-
-
-        for drug_id, indication_name in indications_relationships:
-
-            indication = conn.execute("""
-                SELECT id
-                FROM indications
-                WHERE name = ?
-            """, (indication_name,)).fetchone()
-
-
-            conn.execute("""
-                INSERT OR IGNORE INTO drug_indications
-                (drug_id, indication_id)
-                VALUES (?, ?)
-            """, (
-                drug_id,
-                indication["id"]
-            ))
-
-
-    conn.commit()
-
-    conn.close()
+# Safe to run on every startup; it only creates or upgrades what is missing.
+initialize_database()
 
 
 # =========================================
 # DASHBOARD
 # =========================================
 
+
+
 @app.route("/")
 def home():
-
     conn = get_db()
 
-
-    # =====================================
-    # PAGINATION
-    # =====================================
-
-    page = request.args.get(
-        "page",
-        1,
-        type=int
-    )
-
+    page = max(1, request.args.get("page", 1, type=int))
     per_page = 25
 
-
-    search_query = request.args.get(
-        "search",
+    search_query = request.args.get("search", "", type=str).strip()
+    selected_phase = request.args.get("phase", "", type=str).strip()
+    selected_source = request.args.get("source", "", type=str).strip()
+    target_query = request.args.get("target", "", type=str).strip()
+    indication_query = request.args.get(
+        "indication",
         "",
-        type=str
+        type=str,
     ).strip()
 
+    selected_trials = request.args.get(
+        "trials",
+        "all",
+        type=str,
+    ).strip()
 
-    if page < 1:
+    selected_molecular = request.args.get(
+        "molecular",
+        "all",
+        type=str,
+    ).strip()
 
-        page = 1
+    sort_order = request.args.get(
+        "sort",
+        "name_asc",
+        type=str,
+    ).strip()
 
+    allowed_sorts = {
+        "name_asc": "d.name COLLATE NOCASE ASC, d.id ASC",
+        "name_desc": "d.name COLLATE NOCASE DESC, d.id DESC",
+        "most_trials": "trial_count DESC, d.name COLLATE NOCASE ASC",
+        "fewest_trials": "trial_count ASC, d.name COLLATE NOCASE ASC",
+    }
 
-    # =====================================
-    # COMPOUND QUERY
-    # =====================================
+    if sort_order not in allowed_sorts:
+        sort_order = "name_asc"
+
+    if selected_trials not in {"all", "with", "without"}:
+        selected_trials = "all"
+
+    if selected_molecular not in {"all", "enriched", "missing"}:
+        selected_molecular = "all"
+
+    filters = []
+    parameters = []
 
     if search_query:
+        pattern = f"%{search_query}%"
 
-        search_pattern = f"%{search_query}%"
-
-
-        total_drugs = conn.execute("""
-            SELECT COUNT(*)
-
-            FROM drugs
-
-            WHERE
-
-                name LIKE ?
-
+        filters.append(
+            """
+            (
+                d.name LIKE ?
+                OR COALESCE(d.generic_name, '') LIKE ?
                 OR EXISTS (
                     SELECT 1
-
-                    FROM drug_targets
-
-                    JOIN targets
-                        ON targets.id = drug_targets.target_id
-
-                    WHERE
-                        drug_targets.drug_id = drugs.id
-                        AND targets.name LIKE ?
-                )
-
-                OR EXISTS (
-                    SELECT 1
-
-                    FROM drug_indications
-
-                    JOIN indications
-                        ON indications.id = drug_indications.indication_id
-
-                    WHERE
-                        drug_indications.drug_id = drugs.id
-                        AND indications.name LIKE ?
-                )
-
-        """, (
-            search_pattern,
-            search_pattern,
-            search_pattern
-        )).fetchone()[0]
-
-
-        offset = (page - 1) * per_page
-
-
-        drugs = conn.execute("""
-            SELECT
-
-                drugs.id,
-                drugs.name,
-                drugs.phase,
-                drugs.status,
-
-                GROUP_CONCAT(
-                    DISTINCT targets.name
-                ) AS targets,
-
-                GROUP_CONCAT(
-                    DISTINCT indications.name
-                ) AS indications
-
-            FROM drugs
-
-            LEFT JOIN drug_targets
-                ON drugs.id = drug_targets.drug_id
-
-            LEFT JOIN targets
-                ON drug_targets.target_id = targets.id
-
-            LEFT JOIN drug_indications
-                ON drugs.id = drug_indications.drug_id
-
-            LEFT JOIN indications
-                ON drug_indications.indication_id = indications.id
-
-            WHERE
-
-                drugs.name LIKE ?
-
-                OR EXISTS (
-                    SELECT 1
-
                     FROM drug_targets dt
-
-                    JOIN targets t
-                        ON t.id = dt.target_id
-
-                    WHERE
-                        dt.drug_id = drugs.id
-                        AND t.name LIKE ?
+                    JOIN targets t ON t.id = dt.target_id
+                    WHERE dt.drug_id = d.id
+                    AND t.name LIKE ?
                 )
-
                 OR EXISTS (
                     SELECT 1
-
                     FROM drug_indications di
-
-                    JOIN indications i
-                        ON i.id = di.indication_id
-
-                    WHERE
-                        di.drug_id = drugs.id
-                        AND i.name LIKE ?
+                    JOIN indications i ON i.id = di.indication_id
+                    WHERE di.drug_id = d.id
+                    AND i.name LIKE ?
                 )
+            )
+            """
+        )
 
-            GROUP BY drugs.id
+        parameters.extend([pattern, pattern, pattern, pattern])
 
-            ORDER BY drugs.name
+    if selected_phase:
+        filters.append("d.phase = ?")
+        parameters.append(selected_phase)
 
-            LIMIT ?
-            OFFSET ?
+    if selected_source:
+        filters.append("d.source = ?")
+        parameters.append(selected_source)
 
-        """, (
-            search_pattern,
-            search_pattern,
-            search_pattern,
-            per_page,
-            offset
-        )).fetchall()
+    if target_query:
+        filters.append(
+            """
+            EXISTS (
+                SELECT 1
+                FROM drug_targets dt
+                JOIN targets t ON t.id = dt.target_id
+                WHERE dt.drug_id = d.id
+                AND t.name LIKE ?
+            )
+            """
+        )
+        parameters.append(f"%{target_query}%")
 
+    if indication_query:
+        filters.append(
+            """
+            EXISTS (
+                SELECT 1
+                FROM drug_indications di
+                JOIN indications i ON i.id = di.indication_id
+                WHERE di.drug_id = d.id
+                AND i.name LIKE ?
+            )
+            """
+        )
+        parameters.append(f"%{indication_query}%")
 
-    else:
+    if selected_trials == "with":
+        filters.append(
+            """
+            EXISTS (
+                SELECT 1
+                FROM clinical_trials ct
+                WHERE ct.drug_id = d.id
+            )
+            """
+        )
 
-        total_drugs = conn.execute("""
-            SELECT COUNT(*)
+    elif selected_trials == "without":
+        filters.append(
+            """
+            NOT EXISTS (
+                SELECT 1
+                FROM clinical_trials ct
+                WHERE ct.drug_id = d.id
+            )
+            """
+        )
 
-            FROM drugs
+    if selected_molecular == "enriched":
+        filters.append("d.pubchem_cid IS NOT NULL")
 
-        """).fetchone()[0]
+    elif selected_molecular == "missing":
+        filters.append("d.pubchem_cid IS NULL")
 
+    where_sql = ""
 
-        offset = (page - 1) * per_page
+    if filters:
+        where_sql = "WHERE " + " AND ".join(filters)
 
+    total_drugs = conn.execute(
+        f"""
+        SELECT COUNT(*)
+        FROM drugs d
+        {where_sql}
+        """,
+        parameters,
+    ).fetchone()[0]
 
-        drugs = conn.execute("""
-            SELECT
+    total_pages = max(1, (total_drugs + per_page - 1) // per_page)
+    page = min(page, total_pages)
+    offset = (page - 1) * per_page
 
-                drugs.id,
-                drugs.name,
-                drugs.phase,
-                drugs.status,
+    drugs = conn.execute(
+        f"""
+        SELECT
+            d.id,
+            d.name,
+            d.phase,
+            d.status,
 
-                GROUP_CONCAT(
-                    DISTINCT targets.name
-                ) AS targets,
+            (
+                SELECT GROUP_CONCAT(t.name, ', ')
+                FROM drug_targets dt
+                JOIN targets t ON t.id = dt.target_id
+                WHERE dt.drug_id = d.id
+            ) AS targets,
 
-                GROUP_CONCAT(
-                    DISTINCT indications.name
-                ) AS indications
+            (
+                SELECT GROUP_CONCAT(i.name, ', ')
+                FROM drug_indications di
+                JOIN indications i ON i.id = di.indication_id
+                WHERE di.drug_id = d.id
+            ) AS indications,
 
-            FROM drugs
+            (
+                SELECT COUNT(*)
+                FROM clinical_trials ct
+                WHERE ct.drug_id = d.id
+            ) AS trial_count
 
-            LEFT JOIN drug_targets
-                ON drugs.id = drug_targets.drug_id
+        FROM drugs d
+        {where_sql}
 
-            LEFT JOIN targets
-                ON drug_targets.target_id = targets.id
+        ORDER BY {allowed_sorts[sort_order]}
 
-            LEFT JOIN drug_indications
-                ON drugs.id = drug_indications.drug_id
+        LIMIT ?
+        OFFSET ?
+        """,
+        [*parameters, per_page, offset],
+    ).fetchall()
 
-            LEFT JOIN indications
-                ON drug_indications.indication_id = indications.id
+    def build_preview(value):
+        if not value:
+            return "—"
 
-            GROUP BY drugs.id
+        items = [
+            item.strip()
+            for item in value.split(",")
+            if item.strip()
+        ]
 
-            ORDER BY drugs.name
+        if len(items) > 2:
+            return f"{', '.join(items[:2])} + {len(items) - 2} more"
 
-            LIMIT ?
-            OFFSET ?
-
-        """, (
-            per_page,
-            offset
-        )).fetchall()
-
-
-    # =====================================
-    # COMPACT HOME-PAGE PREVIEWS
-    # =====================================
+        return ", ".join(items)
 
     drug_list = []
 
-
     for drug in drugs:
-
         drug_data = dict(drug)
-
-
-        # -----------------------------
-        # TARGET PREVIEW
-        # -----------------------------
-
-        if drug_data["targets"]:
-
-            target_list = [
-                item.strip()
-                for item in drug_data["targets"].split(",")
-                if item.strip()
-            ]
-
-
-            if len(target_list) > 2:
-
-                drug_data["targets_preview"] = (
-                    ", ".join(target_list[:2])
-                    + f" + {len(target_list) - 2} more"
-                )
-
-            else:
-
-                drug_data["targets_preview"] = (
-                    ", ".join(target_list)
-                )
-
-        else:
-
-            drug_data["targets_preview"] = "—"
-
-
-        # -----------------------------
-        # INDICATION PREVIEW
-        # -----------------------------
-
-        if drug_data["indications"]:
-
-            indication_list = [
-                item.strip()
-                for item in drug_data["indications"].split(",")
-                if item.strip()
-            ]
-
-
-            if len(indication_list) > 2:
-
-                drug_data["indications_preview"] = (
-                    ", ".join(indication_list[:2])
-                    + f" + {len(indication_list) - 2} more"
-                )
-
-            else:
-
-                drug_data["indications_preview"] = (
-                    ", ".join(indication_list)
-                )
-
-        else:
-
-            drug_data["indications_preview"] = "—"
-
-
+        drug_data["targets_preview"] = build_preview(
+            drug_data["targets"]
+        )
+        drug_data["indications_preview"] = build_preview(
+            drug_data["indications"]
+        )
         drug_list.append(drug_data)
 
-
-    drugs = drug_list
-
-
-    # =====================================
-    # PAGE COUNT
-    # =====================================
-
-    total_pages = max(
-        1,
-        (total_drugs + per_page - 1)
-        // per_page
-    )
-
-
-    if page > total_pages:
-
-        page = total_pages
-
-
-    # =====================================
-    # DASHBOARD STATISTICS
-    # =====================================
-
-    approved_drugs = conn.execute("""
+    approved_drugs = conn.execute(
+        """
         SELECT COUNT(*)
-
         FROM drugs
-
         WHERE phase = 'Approved'
+        """
+    ).fetchone()[0]
 
-    """).fetchone()[0]
+    target_count = conn.execute(
+        "SELECT COUNT(*) FROM targets"
+    ).fetchone()[0]
 
+    indication_count = conn.execute(
+        "SELECT COUNT(*) FROM indications"
+    ).fetchone()[0]
 
-    target_count = conn.execute("""
+    trial_count = conn.execute(
+        "SELECT COUNT(*) FROM clinical_trials"
+    ).fetchone()[0]
+
+    active_trial_count = conn.execute(
+        """
         SELECT COUNT(*)
+        FROM clinical_trials
+        WHERE status IN (
+            'RECRUITING',
+            'NOT_YET_RECRUITING',
+            'ENROLLING_BY_INVITATION',
+            'ACTIVE_NOT_RECRUITING'
+        )
+        """
+    ).fetchone()[0]
 
-        FROM targets
-
-    """).fetchone()[0]
-
-
-    indication_count = conn.execute("""
+    enriched_count = conn.execute(
+        """
         SELECT COUNT(*)
-
-        FROM indications
-
-    """).fetchone()[0]
-
-
-    # =====================================
-    # PHASE DISTRIBUTION
-    # =====================================
-
-    phase_rows = conn.execute("""
-        SELECT
-
-            phase,
-            COUNT(*) AS count
-
         FROM drugs
+        WHERE pubchem_cid IS NOT NULL
+        """
+    ).fetchone()[0]
 
-        WHERE
-
-            phase IS NOT NULL
-            AND TRIM(phase) != ''
-
+    phase_rows = conn.execute(
+        """
+        SELECT phase, COUNT(*) AS count
+        FROM drugs
+        WHERE phase IS NOT NULL
+        AND TRIM(phase) != ''
         GROUP BY phase
-
         ORDER BY count DESC
-
-    """).fetchall()
-
+        """
+    ).fetchall()
 
     phase_distribution = []
 
+    for row in phase_rows:
+        percentage = round(
+            (row["count"] / max(1, approved_drugs)) * 100
+        )
 
-    if total_drugs > 0:
-
-        for row in phase_rows:
-
-            percentage = round(
-                (row["count"] / total_drugs) * 100
-            )
-
-
-            phase_distribution.append({
-
+        phase_distribution.append(
+            {
                 "phase": row["phase"],
                 "count": row["count"],
-                "percentage": percentage
+                "percentage": percentage,
+            }
+        )
 
-            })
-
-
-    # =====================================
-    # CLINICAL TRIAL STATISTICS
-    # =====================================
-
-    try:
-
-        trial_count = conn.execute("""
-            SELECT COUNT(*)
-
-            FROM clinical_trials
-
-        """).fetchone()[0]
-
-
-        active_trial_count = conn.execute("""
-            SELECT COUNT(*)
-
-            FROM clinical_trials
-
-            WHERE status IN (
-
-                'RECRUITING',
-                'NOT_YET_RECRUITING',
-                'ENROLLING_BY_INVITATION',
-                'ACTIVE_NOT_RECRUITING'
-
-            )
-
-        """).fetchone()[0]
-
-
-    except sqlite3.OperationalError:
-
-        trial_count = 0
-
-        active_trial_count = 0
-
-
-    # =====================================
-    # PUBCHEM STATISTICS
-    # =====================================
-
-    try:
-
-        enriched_count = conn.execute("""
-            SELECT COUNT(*)
-
+    phase_options = [
+        row["phase"]
+        for row in conn.execute(
+            """
+            SELECT DISTINCT phase
             FROM drugs
+            WHERE phase IS NOT NULL
+            AND TRIM(phase) != ''
+            ORDER BY phase
+            """
+        ).fetchall()
+    ]
 
-            WHERE pubchem_cid IS NOT NULL
-
-        """).fetchone()[0]
-
-
-    except sqlite3.OperationalError:
-
-        enriched_count = 0
-
+    source_options = [
+        row["source"]
+        for row in conn.execute(
+            """
+            SELECT DISTINCT source
+            FROM drugs
+            WHERE source IS NOT NULL
+            AND TRIM(source) != ''
+            ORDER BY source
+            """
+        ).fetchall()
+    ]
 
     conn.close()
 
-
-    # =====================================
-    # RENDER DASHBOARD
-    # =====================================
-
     return render_template(
-
         "index.html",
-
-        drugs=drugs,
-
+        drugs=drug_list,
         total_drugs=total_drugs,
-
         approved_drugs=approved_drugs,
-
         target_count=target_count,
-
         indication_count=indication_count,
-
         trial_count=trial_count,
-
         active_trial_count=active_trial_count,
-
         enriched_count=enriched_count,
-
         phase_distribution=phase_distribution,
-
         page=page,
-
         total_pages=total_pages,
-
         per_page=per_page,
-
-        search_query=search_query
-
+        search_query=search_query,
+        selected_phase=selected_phase,
+        selected_source=selected_source,
+        target_query=target_query,
+        indication_query=indication_query,
+        selected_trials=selected_trials,
+        selected_molecular=selected_molecular,
+        sort_order=sort_order,
+        phase_options=phase_options,
+        source_options=source_options,
     )
-
 
 # =========================================
 # SEARCH
@@ -925,7 +564,4 @@ def drug_profile(drug_id):
 # =========================================
 
 if __name__ == "__main__":
-
-    initialize_database()
-
-    app.run(debug=True)
+    app.run(debug=DEBUG)

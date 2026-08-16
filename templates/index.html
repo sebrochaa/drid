@@ -252,41 +252,274 @@
         <section class="search-container">
 
             <form
-                action="/search"
-                method="GET"
-            >
+    action="{{ url_for('home') }}"
+    method="GET"
+>
+    <input type="hidden" name="phase" value="{{ selected_phase }}">
+    <input type="hidden" name="source" value="{{ selected_source }}">
+    <input type="hidden" name="target" value="{{ target_query }}">
+    <input type="hidden" name="indication" value="{{ indication_query }}">
+    <input type="hidden" name="trials" value="{{ selected_trials }}">
+    <input type="hidden" name="molecular" value="{{ selected_molecular }}">
+    <input type="hidden" name="sort" value="{{ sort_order }}">
 
-                <div class="search-box">
+    <div class="search-box">
 
-                    <span class="search-icon">
-                        ⌕
-                    </span>
+        <span class="search-icon">
+            ⌕
+        </span>
 
+        <input
+            type="text"
+            name="search"
+            placeholder="Search compounds, targets, indications..."
+            value="{{ search_query }}"
+        >
 
-                    <input
-                        type="text"
-                        name="q"
-                        placeholder="Search compounds, targets, indications..."
-                        value="{{ search_query|default('') }}"
-                    >
+        <span class="search-shortcut">
+            Ctrl K
+        </span>
 
+    </div>
 
-                    <span class="search-shortcut">
-                        Ctrl K
-                    </span>
+    <button type="submit">
+        Search
+    </button>
 
-                </div>
-
-
-                <button type="submit">
-                    Search
-                </button>
-
-            </form>
-
+</form>
         </section>
 
+<section class="panel filter-panel">
 
+    <form
+        action="{{ url_for('home') }}"
+        method="GET"
+        class="filter-form"
+    >
+
+        <input
+            type="hidden"
+            name="search"
+            value="{{ search_query }}"
+        >
+
+        <div class="filter-group">
+
+            <label for="phase">
+                Development phase
+            </label>
+
+            <select id="phase" name="phase">
+
+                <option value="">
+                    All phases
+                </option>
+
+                {% for phase in phase_options %}
+
+                    <option
+                        value="{{ phase }}"
+                        {% if phase == selected_phase %}selected{% endif %}
+                    >
+                        {{ phase }}
+                    </option>
+
+                {% endfor %}
+
+            </select>
+
+        </div>
+
+
+        <div class="filter-group">
+
+            <label for="source">
+                Data source
+            </label>
+
+            <select id="source" name="source">
+
+                <option value="">
+                    All sources
+                </option>
+
+                {% for source in source_options %}
+
+                    <option
+                        value="{{ source }}"
+                        {% if source == selected_source %}selected{% endif %}
+                    >
+                        {{ source }}
+                    </option>
+
+                {% endfor %}
+
+            </select>
+
+        </div>
+
+
+        <div class="filter-group">
+
+            <label for="target">
+                Molecular target
+            </label>
+
+            <input
+                id="target"
+                name="target"
+                type="text"
+                placeholder="e.g. PD-1"
+                value="{{ target_query }}"
+            >
+
+        </div>
+
+
+        <div class="filter-group">
+
+            <label for="indication">
+                Indication
+            </label>
+
+            <input
+                id="indication"
+                name="indication"
+                type="text"
+                placeholder="e.g. Cancer"
+                value="{{ indication_query }}"
+            >
+
+        </div>
+
+
+        <div class="filter-group">
+
+            <label for="trials">
+                Clinical trials
+            </label>
+
+            <select id="trials" name="trials">
+
+                <option
+                    value="all"
+                    {% if selected_trials == "all" %}selected{% endif %}
+                >
+                    All records
+                </option>
+
+                <option
+                    value="with"
+                    {% if selected_trials == "with" %}selected{% endif %}
+                >
+                    Has trials
+                </option>
+
+                <option
+                    value="without"
+                    {% if selected_trials == "without" %}selected{% endif %}
+                >
+                    No trials
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <div class="filter-group">
+
+            <label for="molecular">
+                Molecular data
+            </label>
+
+            <select id="molecular" name="molecular">
+
+                <option
+                    value="all"
+                    {% if selected_molecular == "all" %}selected{% endif %}
+                >
+                    All records
+                </option>
+
+                <option
+                    value="enriched"
+                    {% if selected_molecular == "enriched" %}selected{% endif %}
+                >
+                    Available
+                </option>
+
+                <option
+                    value="missing"
+                    {% if selected_molecular == "missing" %}selected{% endif %}
+                >
+                    Missing
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <div class="filter-group">
+
+            <label for="sort">
+                Sort by
+            </label>
+
+            <select id="sort" name="sort">
+
+                <option
+                    value="name_asc"
+                    {% if sort_order == "name_asc" %}selected{% endif %}
+                >
+                    Name: A–Z
+                </option>
+
+                <option
+                    value="name_desc"
+                    {% if sort_order == "name_desc" %}selected{% endif %}
+                >
+                    Name: Z–A
+                </option>
+
+                <option
+                    value="most_trials"
+                    {% if sort_order == "most_trials" %}selected{% endif %}
+                >
+                    Most trials
+                </option>
+
+                <option
+                    value="fewest_trials"
+                    {% if sort_order == "fewest_trials" %}selected{% endif %}
+                >
+                    Fewest trials
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <div class="filter-actions">
+
+            <button type="submit" class="filter-apply">
+                Apply filters
+            </button>
+
+            <a
+                href="{{ url_for('home') }}"
+                class="filter-reset"
+            >
+                Reset
+            </a>
+
+        </div>
+
+    </form>
+
+</section>
 
         <!-- =====================================
              KEY METRICS
@@ -838,7 +1071,13 @@
 
                                 </td>
 
+<!-- TRIALS -->
 
+<td>
+
+    {{ drug["trial_count"] }}
+
+</td>
 
                                 <!-- STATUS -->
 
@@ -863,7 +1102,7 @@
                             <tr>
 
                                 <td
-                                    colspan="5"
+                                    colspan="6"
                                     class="empty"
                                 >
 
@@ -942,11 +1181,17 @@
 
                         <a
                             href="{{ url_for(
-                                'home',
-                                page=page - 1,
-                                search=search_query
-                            ) }}"
-                            class="page-button"
+    'home',
+    page=page - 1,
+    search=search_query,
+    phase=selected_phase,
+    source=selected_source,
+    target=target_query,
+    indication=indication_query,
+    trials=selected_trials,
+    molecular=selected_molecular,
+    sort=sort_order
+) }}"
                         >
 
                             ←
@@ -975,16 +1220,17 @@
 
                                 <a
                                     href="{{ url_for(
-                                        'home',
-                                        page=page_number,
-                                        search=search_query
-                                    ) }}"
-                                    class="
-                                        page-button
-                                        {% if page_number == page %}
-                                            active-page
-                                        {% endif %}
-                                    "
+    'home',
+    page=page_number,
+    search=search_query,
+    phase=selected_phase,
+    source=selected_source,
+    target=target_query,
+    indication=indication_query,
+    trials=selected_trials,
+    molecular=selected_molecular,
+    sort=sort_order
+) }}"
                                 >
 
                                     {{ page_number }}
@@ -1015,11 +1261,17 @@
 
                         <a
                             href="{{ url_for(
-                                'home',
-                                page=page + 1,
-                                search=search_query
-                            ) }}"
-                            class="page-button"
+    'home',
+    page=page + 1,
+    search=search_query,
+    phase=selected_phase,
+    source=selected_source,
+    target=target_query,
+    indication=indication_query,
+    trials=selected_trials,
+    molecular=selected_molecular,
+    sort=sort_order
+) }}"
                         >
 
                             →

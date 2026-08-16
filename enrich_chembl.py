@@ -3,7 +3,9 @@ import requests
 import time
 
 
-DATABASE = "drid.db"
+from config import DATABASE_PATH
+
+DATABASE = str(DATABASE_PATH)
 
 CHEMBL_API = "https://www.ebi.ac.uk/chembl/api/data"
 

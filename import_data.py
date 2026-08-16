@@ -2,7 +2,9 @@ import requests
 import sqlite3
 
 
-DATABASE = "drid.db"
+from config import DATABASE_PATH
+
+DATABASE = str(DATABASE_PATH)
 
 FDA_URL = "https://api.fda.gov/drug/drugsfda.json"
 
