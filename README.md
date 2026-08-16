@@ -89,11 +89,15 @@ These numbers will change as the database continues to be enriched.
 ```text
 drid/
 ├── app.py
+├── database.py
+├── config.py
 ├── README.md
 ├── .gitignore
 ├── drid.db
 ├── templates/
 │   ├── index.html
-│   └── drug.html
+│   ├── drug.html
+    ├── therapetic_areas.html
+    └── trials.html
 └── static/
     └── style.css
