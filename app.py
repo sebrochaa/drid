@@ -393,6 +393,461 @@ def search():
         )
     )
 
+# =========================================
+# CLINICAL TRIAL EXPLORER
+# =========================================
+
+@app.route("/trials")
+def clinical_trials():
+
+    conn = get_db()
+
+    page = max(
+        1,
+        request.args.get("page", 1, type=int)
+    )
+
+    per_page = 25
+
+    trial_query = request.args.get(
+        "q",
+        "",
+        type=str
+    ).strip()
+
+    selected_status = request.args.get(
+        "status",
+        "",
+        type=str
+    ).strip()
+
+    selected_phase = request.args.get(
+        "phase",
+        "",
+        type=str
+    ).strip()
+
+    sort_order = request.args.get(
+        "sort",
+        "newest",
+        type=str
+    ).strip()
+
+    allowed_sorts = {
+        "newest": (
+            "ct.start_date IS NULL ASC, "
+            "ct.start_date DESC, "
+            "ct.id DESC"
+        ),
+        "oldest": (
+            "ct.start_date IS NULL ASC, "
+            "ct.start_date ASC, "
+            "ct.id ASC"
+        ),
+        "drug": (
+            "d.name COLLATE NOCASE ASC, "
+            "ct.start_date DESC"
+        ),
+        "status": (
+            "ct.status COLLATE NOCASE ASC, "
+            "ct.start_date DESC"
+        ),
+    }
+
+    if sort_order not in allowed_sorts:
+        sort_order = "newest"
+
+    filters = []
+    parameters = []
+
+    if trial_query:
+
+        pattern = f"%{trial_query}%"
+
+        filters.append(
+            """
+            (
+                ct.nct_id LIKE ?
+                OR ct.title LIKE ?
+                OR ct.conditions LIKE ?
+                OR ct.sponsor LIKE ?
+                OR d.name LIKE ?
+            )
+            """
+        )
+
+        parameters.extend(
+            [pattern, pattern, pattern, pattern, pattern]
+        )
+
+    if selected_status:
+
+        filters.append("ct.status = ?")
+        parameters.append(selected_status)
+
+    if selected_phase:
+
+        filters.append("ct.phase LIKE ?")
+        parameters.append(f"%{selected_phase}%")
+
+    where_sql = ""
+
+    if filters:
+        where_sql = "WHERE " + " AND ".join(filters)
+
+    total_trials = conn.execute(
+        f"""
+        SELECT COUNT(*)
+
+        FROM clinical_trials ct
+
+        LEFT JOIN drugs d
+            ON d.id = ct.drug_id
+
+        {where_sql}
+        """,
+        parameters,
+    ).fetchone()[0]
+
+    total_pages = max(
+        1,
+        (total_trials + per_page - 1) // per_page
+    )
+
+    page = min(page, total_pages)
+    offset = (page - 1) * per_page
+
+    trials = conn.execute(
+        f"""
+        SELECT
+            ct.id,
+            ct.drug_id,
+            ct.nct_id,
+            ct.title,
+            ct.status,
+            ct.phase,
+            ct.conditions,
+            ct.sponsor,
+            ct.study_type,
+            ct.start_date,
+            ct.completion_date,
+            d.name AS drug_name
+
+        FROM clinical_trials ct
+
+        LEFT JOIN drugs d
+            ON d.id = ct.drug_id
+
+        {where_sql}
+
+        ORDER BY {allowed_sorts[sort_order]}
+
+        LIMIT ?
+        OFFSET ?
+        """,
+        [*parameters, per_page, offset],
+    ).fetchall()
+
+    total_trial_count = conn.execute(
+        "SELECT COUNT(*) FROM clinical_trials"
+    ).fetchone()[0]
+
+    recruiting_count = conn.execute(
+        """
+        SELECT COUNT(*)
+
+        FROM clinical_trials
+
+        WHERE status = 'RECRUITING'
+        """
+    ).fetchone()[0]
+
+    active_trial_count = conn.execute(
+        """
+        SELECT COUNT(*)
+
+        FROM clinical_trials
+
+        WHERE status IN (
+            'RECRUITING',
+            'NOT_YET_RECRUITING',
+            'ENROLLING_BY_INVITATION',
+            'ACTIVE_NOT_RECRUITING'
+        )
+        """
+    ).fetchone()[0]
+
+    compounds_with_trials = conn.execute(
+        """
+        SELECT COUNT(DISTINCT drug_id)
+
+        FROM clinical_trials
+
+        WHERE drug_id IS NOT NULL
+        """
+    ).fetchone()[0]
+
+    status_options = [
+        row["status"]
+        for row in conn.execute(
+            """
+            SELECT DISTINCT status
+
+            FROM clinical_trials
+
+            WHERE status IS NOT NULL
+            AND TRIM(status) != ''
+
+            ORDER BY status
+            """
+        ).fetchall()
+    ]
+
+    conn.close()
+
+    return render_template(
+        "trials.html",
+        trials=trials,
+        total_trials=total_trials,
+        total_trial_count=total_trial_count,
+        recruiting_count=recruiting_count,
+        active_trial_count=active_trial_count,
+        compounds_with_trials=compounds_with_trials,
+        status_options=status_options,
+        page=page,
+        total_pages=total_pages,
+        per_page=per_page,
+        trial_query=trial_query,
+        selected_status=selected_status,
+        selected_phase=selected_phase,
+        sort_order=sort_order,
+    )
+
+# =========================================
+# THERAPEUTIC AREAS
+# =========================================
+
+@app.route("/therapeutic-areas")
+def therapeutic_areas():
+
+    conn = get_db()
+
+    page = max(
+        1,
+        request.args.get("page", 1, type=int)
+    )
+
+    per_page = 25
+
+    area_query = request.args.get(
+        "q",
+        "",
+        type=str
+    ).strip()
+
+    study_filter = request.args.get(
+        "studies",
+        "all",
+        type=str
+    ).strip()
+
+    sort_order = request.args.get(
+        "sort",
+        "most_compounds",
+        type=str
+    ).strip()
+
+    allowed_sorts = {
+        "most_compounds": (
+            "compound_count DESC, "
+            "i.name COLLATE NOCASE ASC"
+        ),
+        "most_trials": (
+            "trial_count DESC, "
+            "i.name COLLATE NOCASE ASC"
+        ),
+        "most_active": (
+            "active_trial_count DESC, "
+            "i.name COLLATE NOCASE ASC"
+        ),
+        "name_asc": (
+            "i.name COLLATE NOCASE ASC"
+        ),
+    }
+
+    if sort_order not in allowed_sorts:
+        sort_order = "most_compounds"
+
+    if study_filter not in {"all", "with", "without"}:
+        study_filter = "all"
+
+    filters = []
+    parameters = []
+
+    if area_query:
+
+        filters.append("i.name LIKE ?")
+        parameters.append(f"%{area_query}%")
+
+    if study_filter == "with":
+
+        filters.append(
+            """
+            EXISTS (
+                SELECT 1
+
+                FROM drug_indications di_check
+
+                JOIN clinical_trials ct_check
+                    ON ct_check.drug_id = di_check.drug_id
+
+                WHERE di_check.indication_id = i.id
+            )
+            """
+        )
+
+    elif study_filter == "without":
+
+        filters.append(
+            """
+            NOT EXISTS (
+                SELECT 1
+
+                FROM drug_indications di_check
+
+                JOIN clinical_trials ct_check
+                    ON ct_check.drug_id = di_check.drug_id
+
+                WHERE di_check.indication_id = i.id
+            )
+            """
+        )
+
+    where_sql = ""
+
+    if filters:
+        where_sql = "WHERE " + " AND ".join(filters)
+
+    total_areas = conn.execute(
+        f"""
+        SELECT COUNT(*)
+
+        FROM indications i
+
+        {where_sql}
+        """,
+        parameters,
+    ).fetchone()[0]
+
+    total_pages = max(
+        1,
+        (total_areas + per_page - 1) // per_page
+    )
+
+    page = min(page, total_pages)
+    offset = (page - 1) * per_page
+
+    areas = conn.execute(
+        f"""
+        SELECT
+            i.id,
+            i.name,
+
+            COUNT(DISTINCT di.drug_id) AS compound_count,
+
+            COUNT(DISTINCT ct.id) AS trial_count,
+
+            COUNT(
+                DISTINCT CASE
+                    WHEN ct.status IN (
+                        'RECRUITING',
+                        'NOT_YET_RECRUITING',
+                        'ENROLLING_BY_INVITATION',
+                        'ACTIVE_NOT_RECRUITING'
+                    )
+                    THEN ct.id
+                END
+            ) AS active_trial_count
+
+        FROM indications i
+
+        LEFT JOIN drug_indications di
+            ON di.indication_id = i.id
+
+        LEFT JOIN clinical_trials ct
+            ON ct.drug_id = di.drug_id
+
+        {where_sql}
+
+        GROUP BY i.id, i.name
+
+        ORDER BY {allowed_sorts[sort_order]}
+
+        LIMIT ?
+        OFFSET ?
+        """,
+        [*parameters, per_page, offset],
+    ).fetchall()
+
+    total_area_count = conn.execute(
+        "SELECT COUNT(*) FROM indications"
+    ).fetchone()[0]
+
+    areas_with_compounds = conn.execute(
+        """
+        SELECT COUNT(DISTINCT indication_id)
+
+        FROM drug_indications
+        """
+    ).fetchone()[0]
+
+    areas_with_trials = conn.execute(
+        """
+        SELECT COUNT(DISTINCT di.indication_id)
+
+        FROM drug_indications di
+
+        JOIN clinical_trials ct
+            ON ct.drug_id = di.drug_id
+        """
+    ).fetchone()[0]
+
+    top_area = conn.execute(
+        """
+        SELECT
+            i.name,
+            COUNT(DISTINCT di.drug_id) AS compound_count
+
+        FROM indications i
+
+        LEFT JOIN drug_indications di
+            ON di.indication_id = i.id
+
+        GROUP BY i.id, i.name
+
+        ORDER BY compound_count DESC, i.name ASC
+
+        LIMIT 1
+        """
+    ).fetchone()
+
+    conn.close()
+
+    return render_template(
+        "therapeutic_areas.html",
+        areas=areas,
+        total_areas=total_areas,
+        total_area_count=total_area_count,
+        areas_with_compounds=areas_with_compounds,
+        areas_with_trials=areas_with_trials,
+        top_area=top_area,
+        page=page,
+        total_pages=total_pages,
+        per_page=per_page,
+        area_query=area_query,
+        study_filter=study_filter,
+        sort_order=sort_order,
+    )
 
 # =========================================
 # DRUG PROFILE

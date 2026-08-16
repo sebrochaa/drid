@@ -2107,3 +2107,222 @@ footer {
     }
 
 }
+
+/* =========================================
+   CLINICAL TRIAL EXPLORER
+========================================= */
+
+.clinical-trials-table {
+    min-width: 1080px;
+}
+
+.clinical-trials-table td {
+    vertical-align: top;
+    white-space: normal;
+    line-height: 1.5;
+}
+
+.clinical-trials-table th:nth-child(1),
+.clinical-trials-table td:nth-child(1),
+.clinical-trials-table th:nth-child(4),
+.clinical-trials-table td:nth-child(4),
+.clinical-trials-table th:nth-child(5),
+.clinical-trials-table td:nth-child(5),
+.clinical-trials-table th:nth-child(7),
+.clinical-trials-table td:nth-child(7) {
+    white-space: nowrap;
+}
+
+.clinical-trials-table th:nth-child(2),
+.clinical-trials-table td:nth-child(2) {
+    min-width: 300px;
+    max-width: 420px;
+}
+
+.clinical-trials-table th:nth-child(6),
+.clinical-trials-table td:nth-child(6) {
+    min-width: 180px;
+    max-width: 260px;
+}
+
+.clinical-trials-table td strong {
+    color: #26313e;
+    font-size: 10px;
+    font-weight: 600;
+}
+
+.clinical-trials-table .table-empty {
+    display: inline-block;
+    margin-top: 4px;
+}
+
+/* =========================================
+   TABLE PAGINATION POLISH
+========================================= */
+
+.database-panel .compound-table-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+
+    margin: 0;
+    padding: 16px 21px 18px;
+
+    border-top: 1px solid #edf0f3;
+}
+
+.database-panel .pagination {
+    display: flex !important;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+.database-panel .page-button {
+    width: 28px;
+    min-width: 28px;
+    height: 28px;
+    padding: 0;
+
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid #dce2e8;
+    border-radius: 6px;
+
+    background: #ffffff;
+    color: #64748b;
+
+    font-size: 10px;
+    font-weight: 600;
+    line-height: 1;
+    text-decoration: none;
+}
+
+.database-panel .page-button:hover {
+    border-color: var(--accent);
+    background: #eef5ff;
+    color: var(--accent);
+}
+
+.database-panel .page-button.active-page,
+.database-panel .page-button.active-page:hover {
+    border-color: var(--accent);
+    background: var(--accent);
+    color: #ffffff;
+}
+
+.database-panel .page-dots {
+    padding: 0 4px;
+    color: #94a3b8;
+    font-size: 10px;
+}
+
+@media (max-width: 750px) {
+
+    .database-panel .compound-table-footer {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+}
+
+/* =========================================
+   PAGINATION
+========================================= */
+
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-left: auto;
+}
+
+.page-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-width: 36px;
+    height: 36px;
+
+    padding: 0 10px;
+
+    border: 1px solid var(--border-color, #e5e7eb);
+    border-radius: 8px;
+
+    background: var(--panel-background, #ffffff);
+
+    color: var(--text-secondary, #6b7280);
+
+    text-decoration: none;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.page-button:hover {
+    background: var(--background-secondary, #f5f6f8);
+
+    border-color: var(--border-hover, #d1d5db);
+
+    color: var(--text-primary, #111827);
+
+    transform: translateY(-1px);
+}
+
+.page-button.active-page {
+    background: #111827;
+
+    border-color: #111827;
+
+    color: #ffffff;
+
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+}
+
+.page-dots {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    min-width: 28px;
+    height: 36px;
+
+    color: var(--text-secondary, #6b7280);
+
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.compound-table-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 20px;
+
+    padding-top: 20px;
+}
+
+.compound-count {
+    color: var(--text-secondary, #6b7280);
+
+    font-size: 13px;
+}
+
+.compound-count strong {
+    color: var(--text-primary, #111827);
+
+    font-weight: 600;
+}

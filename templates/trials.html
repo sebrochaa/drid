@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Clinical Trials | DRID</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
+</head>
+
+
+<body>
+
+
+    <aside class="sidebar">
+
+        <div class="brand">
+
+            <div class="brand-mark">
+                D
+            </div>
+
+            <div>
+
+                <h1>
+                    DRID
+                </h1>
+
+                <span>
+                    Research Intelligence
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div class="nav-section">
+
+    <p class="nav-label">
+        WORKSPACE
+    </p>
+
+
+    <a
+        href="{{ url_for('home') }}"
+        class="nav-item"
+    >
+
+        <span class="nav-icon">
+            ⌂
+        </span>
+
+        Overview
+
+    </a>
+<a
+        href="{{ url_for('clinical_trials') }}"
+        class="nav-item active"
+    >
+
+        <span class="nav-icon">
+            ◌
+        </span>
+
+        Clinical Trials
+
+    </a>
+
+    <a
+        href="#"
+        class="nav-item"
+    >
+
+        <span class="nav-icon">
+            ◈
+        </span>
+
+        Compounds
+
+    </a>
+
+
+    
+
+
+    <a
+        href="#"
+        class="nav-item"
+    >
+
+        <span class="nav-icon">
+            ⌬
+        </span>
+
+        Drug Pipeline
+
+    </a>
+
+
+    <a
+        href="#"
+        class="nav-item"
+    >
+
+        <span class="nav-icon">
+            ◎
+        </span>
+
+        Targets
+
+    </a>
+
+
+    <a
+        href="#"
+        class="nav-item"
+    >
+
+        <span class="nav-icon">
+            ▤
+        </span>
+
+        Research
+
+    </a>
+
+</div>
+
+
+<div class="nav-section">
+
+    <p class="nav-label">
+        ANALYSIS
+    </p>
+
+
+    <a
+        href="#"
+        class="nav-item"
+    >
+
+        <span class="nav-icon">
+            ↗
+        </span>
+
+        Trends
+
+    </a>
+
+
+    <a
+        href="{{ url_for('therapeutic_areas') }}"
+        class="nav-item"
+    >
+
+        <span class="nav-icon">
+            ▦
+        </span>
+
+        Therapeutic Areas
+
+    </a>
+
+</div>
+
+
+        <div class="sidebar-bottom">
+
+            <p>
+                DRID v0.1
+            </p>
+
+            <span>
+                Research dashboard
+            </span>
+
+        </div>
+
+    </aside>
+
+
+    <main class="main">
+
+
+        <header class="topbar">
+
+            <div>
+
+                <p class="topbar-label">
+                    CLINICAL RESEARCH
+                </p>
+
+                <h2>
+                    Clinical Trial Explorer
+                </h2>
+
+            </div>
+
+
+            <div class="topbar-right">
+
+                <div class="system-status">
+
+                    <span class="status-dot"></span>
+
+                    System operational
+
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <section class="panel filter-panel">
+
+            <form
+                action="{{ url_for('clinical_trials') }}"
+                method="GET"
+                class="filter-form"
+            >
+
+                <div class="filter-group">
+
+                    <label for="q">
+                        Search trials
+                    </label>
+
+                    <input
+                        id="q"
+                        name="q"
+                        type="text"
+                        placeholder="NCT ID, drug, sponsor, condition..."
+                        value="{{ trial_query }}"
+                    >
+
+                </div>
+
+
+                <div class="filter-group">
+
+                    <label for="status">
+                        Recruitment status
+                    </label>
+
+                    <select id="status" name="status">
+
+                        <option value="">
+                            All statuses
+                        </option>
+
+                        {% for status in status_options %}
+
+                            <option
+                                value="{{ status }}"
+                                {% if status == selected_status %}selected{% endif %}
+                            >
+                                {{ status.replace("_", " ") }}
+                            </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+
+                <div class="filter-group">
+
+                    <label for="phase">
+                        Trial phase
+                    </label>
+
+                    <select id="phase" name="phase">
+
+                        <option value="">
+                            All phases
+                        </option>
+
+                        <option
+                            value="EARLY_PHASE1"
+                            {% if selected_phase == "EARLY_PHASE1" %}selected{% endif %}
+                        >
+                            Early Phase 1
+                        </option>
+
+                        <option
+                            value="PHASE1"
+                            {% if selected_phase == "PHASE1" %}selected{% endif %}
+                        >
+                            Phase 1
+                        </option>
+
+                        <option
+                            value="PHASE2"
+                            {% if selected_phase == "PHASE2" %}selected{% endif %}
+                        >
+                            Phase 2
+                        </option>
+
+                        <option
+                            value="PHASE3"
+                            {% if selected_phase == "PHASE3" %}selected{% endif %}
+                        >
+                            Phase 3
+                        </option>
+
+                        <option
+                            value="PHASE4"
+                            {% if selected_phase == "PHASE4" %}selected{% endif %}
+                        >
+                            Phase 4
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="filter-group">
+
+                    <label for="sort">
+                        Sort by
+                    </label>
+
+                    <select id="sort" name="sort">
+
+                        <option
+                            value="newest"
+                            {% if sort_order == "newest" %}selected{% endif %}
+                        >
+                            Newest study
+                        </option>
+
+                        <option
+                            value="oldest"
+                            {% if sort_order == "oldest" %}selected{% endif %}
+                        >
+                            Oldest study
+                        </option>
+
+                        <option
+                            value="drug"
+                            {% if sort_order == "drug" %}selected{% endif %}
+                        >
+                            Drug name
+                        </option>
+
+                        <option
+                            value="status"
+                            {% if sort_order == "status" %}selected{% endif %}
+                        >
+                            Recruitment status
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="filter-actions">
+
+                    <button
+                        type="submit"
+                        class="filter-apply"
+                    >
+                        Apply filters
+                    </button>
+
+                    <a
+                        href="{{ url_for('clinical_trials') }}"
+                        class="filter-reset"
+                    >
+                        Reset
+                    </a>
+
+                </div>
+
+            </form>
+
+        </section>
+
+
+        <section class="metrics">
+
+            <div class="metric-card">
+
+                <div class="metric-top">
+
+                    <span>
+                        Total Studies
+                    </span>
+
+                    <span class="metric-symbol">
+                        ◈
+                    </span>
+
+                </div>
+
+                <strong>
+                    {{ total_trial_count }}
+                </strong>
+
+                <p class="metric-change">
+                    ClinicalTrials.gov records
+                </p>
+
+            </div>
+
+
+            <div class="metric-card">
+
+                <div class="metric-top">
+
+                    <span>
+                        Recruiting
+                    </span>
+
+                    <span class="metric-symbol">
+                        ●
+                    </span>
+
+                </div>
+
+                <strong>
+                    {{ recruiting_count }}
+                </strong>
+
+                <p class="metric-change">
+                    Open for enrolment
+                </p>
+
+            </div>
+
+
+            <div class="metric-card">
+
+                <div class="metric-top">
+
+                    <span>
+                        Active Studies
+                    </span>
+
+                    <span class="metric-symbol">
+                        ◎
+                    </span>
+
+                </div>
+
+                <strong>
+                    {{ active_trial_count }}
+                </strong>
+
+                <p class="metric-change">
+                    Active or recruiting
+                </p>
+
+            </div>
+
+
+            <div class="metric-card">
+
+                <div class="metric-top">
+
+                    <span>
+                        Compounds Studied
+                    </span>
+
+                    <span class="metric-symbol">
+                        ⌬
+                    </span>
+
+                </div>
+
+                <strong>
+                    {{ compounds_with_trials }}
+                </strong>
+
+                <p class="metric-change">
+                    Linked drug records
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <section class="panel database-panel">
+
+            <div class="panel-header">
+
+                <div>
+
+                    <p class="panel-label">
+                        STUDY DATABASE
+                    </p>
+
+                    <h3>
+                        Clinical Studies
+                    </h3>
+
+                    <p class="panel-description">
+                        Showing {{ total_trials }} matching study records
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="table-wrapper">
+
+                <table class="clinical-trials-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                NCT ID
+                            </th>
+
+                            <th>
+                                STUDY
+                            </th>
+
+                            <th>
+                                COMPOUND
+                            </th>
+
+                            <th>
+                                STATUS
+                            </th>
+
+                            <th>
+                                PHASE
+                            </th>
+
+                            <th>
+                                CONDITIONS
+                            </th>
+
+                            <th>
+                                START DATE
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        {% for trial in trials %}
+
+                        <tr>
+
+                            <td>
+
+                                <a
+                                    href="https://clinicaltrials.gov/study/{{ trial['nct_id'] }}"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    class="source-link"
+                                >
+                                    {{ trial["nct_id"] }} ↗
+                                </a>
+
+                            </td>
+
+
+                            <td>
+
+                                <strong>
+                                    {{ trial["title"] }}
+                                </strong>
+
+                                {% if trial["sponsor"] %}
+
+                                    <br>
+
+                                    <span class="table-empty">
+                                        {{ trial["sponsor"] }}
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <td>
+
+                                {% if trial["drug_id"] and trial["drug_name"] %}
+
+                                    <a
+                                        href="{{ url_for(
+                                            'drug_profile',
+                                            drug_id=trial['drug_id']
+                                        ) }}"
+                                        class="compound-link"
+                                    >
+                                        {{ trial["drug_name"] }}
+                                    </a>
+
+                                {% else %}
+
+                                    <span class="table-empty">
+                                        Unlinked
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <td>
+
+                                {% set status = trial["status"] or "UNKNOWN" %}
+
+                                <span
+                                    class="trial-status status-{{ status|lower|replace('_', '-')|replace(' ', '-') }}"
+                                >
+                                    {{ status.replace("_", " ") }}
+                                </span>
+
+                            </td>
+
+
+                            <td>
+                                {{ trial["phase"] or "—" }}
+                            </td>
+
+
+                            <td>
+                                {{ trial["conditions"] or "—" }}
+                            </td>
+
+
+                            <td>
+                                {{ trial["start_date"] or "—" }}
+                            </td>
+
+                        </tr>
+
+                        {% else %}
+
+                        <tr>
+
+                            <td
+                                colspan="7"
+                                class="empty"
+                            >
+                                No clinical trials match those filters.
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+            {% if total_pages > 1 %}
+
+            <div class="compound-table-footer">
+
+                <div class="compound-count">
+
+                    Showing
+
+                    <strong>
+                        {{ ((page - 1) * per_page) + 1 }}
+                    </strong>
+
+                    –
+
+                    <strong>
+                        {{ [page * per_page, total_trials] | min }}
+                    </strong>
+
+                    of
+
+                    <strong>
+                        {{ total_trials }}
+                    </strong>
+
+                </div>
+
+
+                <div class="pagination">
+
+                    {% if page > 1 %}
+
+                    <a
+                        href="{{ url_for(
+                            'clinical_trials',
+                            page=page - 1,
+                            q=trial_query,
+                            status=selected_status,
+                            phase=selected_phase,
+                            sort=sort_order
+                        ) }}"
+                        class="page-button"
+                    >
+                        ←
+                    </a>
+
+                    {% endif %}
+
+
+                    {% for page_number in range(1, total_pages + 1) %}
+
+                        {% if
+                            page_number == 1
+                            or page_number == total_pages
+                            or (
+                                page_number >= page - 2
+                                and page_number <= page + 2
+                            )
+                        %}
+
+                        <a
+                            href="{{ url_for(
+                                'clinical_trials',
+                                page=page_number,
+                                q=trial_query,
+                                status=selected_status,
+                                phase=selected_phase,
+                                sort=sort_order
+                            ) }}"
+                            class="
+                                page-button
+                                {% if page_number == page %}
+                                    active-page
+                                {% endif %}
+                            "
+                        >
+                            {{ page_number }}
+                        </a>
+
+                        {% elif
+                            page_number == page - 3
+                            or page_number == page + 3
+                        %}
+
+                        <span class="page-dots">
+                            ...
+                        </span>
+
+                        {% endif %}
+
+                    {% endfor %}
+
+
+                    {% if page < total_pages %}
+
+                    <a
+                        href="{{ url_for(
+                            'clinical_trials',
+                            page=page + 1,
+                            q=trial_query,
+                            status=selected_status,
+                            phase=selected_phase,
+                            sort=sort_order
+                        ) }}"
+                        class="page-button"
+                    >
+                        →
+                    </a>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+            {% endif %}
+
+        </section>
+
+
+        <footer>
+
+            <span>
+                DRID is an educational research dashboard.
+            </span>
+
+            <span>
+                Clinical trial data: ClinicalTrials.gov
+            </span>
+
+        </footer>
+
+    </main>
+
+</body>
+
+</html>

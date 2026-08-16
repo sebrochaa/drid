@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Therapeutic Areas | DRID</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
+</head>
+
+
+<body>
+
+
+    <aside class="sidebar">
+
+        <div class="brand">
+
+            <div class="brand-mark">
+                D
+            </div>
+
+            <div>
+
+                <h1>
+                    DRID
+                </h1>
+
+                <span>
+                    Research Intelligence
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div class="nav-section">
+
+            <p class="nav-label">
+                WORKSPACE
+            </p>
+
+            <a
+                href="{{ url_for('home') }}"
+                class="nav-item"
+            >
+
+                <span class="nav-icon">
+                    ⌂
+                </span>
+
+                Overview
+
+            </a>
+
+            <a
+                href="{{ url_for('clinical_trials') }}"
+                class="nav-item"
+            >
+
+                <span class="nav-icon">
+                    ◌
+                </span>
+
+                Clinical Trials
+
+            </a>
+
+            <a
+                href="{{ url_for('therapeutic_areas') }}"
+                class="nav-item active"
+            >
+
+                <span class="nav-icon">
+                    ▦
+                </span>
+
+                Therapeutic Areas
+
+            </a>
+
+        </div>
+
+
+        <div class="sidebar-bottom">
+
+            <p>
+                DRID v0.2
+            </p>
+
+            <span>
+                Research dashboard
+            </span>
+
+        </div>
+
+    </aside>
+
+
+    <main class="main">
+
+
+        <header class="topbar">
+
+            <div>
+
+                <p class="topbar-label">
+                    DISEASE INTELLIGENCE
+                </p>
+
+                <h2>
+                    Therapeutic Areas
+                </h2>
+
+            </div>
+
+
+            <div class="topbar-right">
+
+                <div class="system-status">
+
+                    <span class="status-dot"></span>
+
+                    System operational
+
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <section class="panel filter-panel">
+
+            <form
+                action="{{ url_for('therapeutic_areas') }}"
+                method="GET"
+                class="filter-form"
+            >
+
+                <div class="filter-group">
+
+                    <label for="q">
+                        Search indications
+                    </label>
+
+                    <input
+                        id="q"
+                        name="q"
+                        type="text"
+                        placeholder="e.g. Cancer, obesity..."
+                        value="{{ area_query }}"
+                    >
+
+                </div>
+
+
+                <div class="filter-group">
+
+                    <label for="studies">
+                        Clinical studies
+                    </label>
+
+                    <select id="studies" name="studies">
+
+                        <option
+                            value="all"
+                            {% if study_filter == "all" %}selected{% endif %}
+                        >
+                            All areas
+                        </option>
+
+                        <option
+                            value="with"
+                            {% if study_filter == "with" %}selected{% endif %}
+                        >
+                            Has studies
+                        </option>
+
+                        <option
+                            value="without"
+                            {% if study_filter == "without" %}selected{% endif %}
+                        >
+                            No studies
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="filter-group">
+
+                    <label for="sort">
+                        Sort by
+                    </label>
+
+                    <select id="sort" name="sort">
+
+                        <option
+                            value="most_compounds"
+                            {% if sort_order == "most_compounds" %}selected{% endif %}
+                        >
+                            Most compounds
+                        </option>
+
+                        <option
+                            value="most_trials"
+                            {% if sort_order == "most_trials" %}selected{% endif %}
+                        >
+                            Most studies
+                        </option>
+
+                        <option
+                            value="most_active"
+                            {% if sort_order == "most_active" %}selected{% endif %}
+                        >
+                            Most active studies
+                        </option>
+
+                        <option
+                            value="name_asc"
+                            {% if sort_order == "name_asc" %}selected{% endif %}
+                        >
+                            Name: A–Z
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="filter-actions">
+
+                    <button
+                        type="submit"
+                        class="filter-apply"
+                    >
+                        Apply filters
+                    </button>
+
+                    <a
+                        href="{{ url_for('therapeutic_areas') }}"
+                        class="filter-reset"
+                    >
+                        Reset
+                    </a>
+
+                </div>
+
+            </form>
+
+        </section>
+
+
+        <section class="metrics">
+
+            <div class="metric-card">
+
+                <div class="metric-top">
+
+                    <span>
+                        Indexed Areas
+                    </span>
+
+                    <span class="metric-symbol">
+                        ▦
+                    </span>
+
+                </div>
+
+                <strong>
+                    {{ total_area_count }}
+                </strong>
+
+                <p class="metric-change">
+                    Conditions and indications
+                </p>
+
+            </div>
+
+
+            <div class="metric-card">
+
+                <div class="metric-top">
+
+                    <span>
+                        Areas with Compounds
+                    </span>
+
+                    <span class="metric-symbol">
+                        ◈
+                    </span>
+
+                </div>
+
+                <strong>
+                    {{ areas_with_compounds }}
+                </strong>
+
+                <p class="metric-change">
+                    Linked to drug records
+                </p>
+
+            </div>
+
+
+            <div class="metric-card">
+
+                <div class="metric-top">
+
+                    <span>
+                        Areas with Studies
+                    </span>
+
+                    <span class="metric-symbol">
+                        ◌
+                    </span>
+
+                </div>
+
+                <strong>
+                    {{ areas_with_trials }}
+                </strong>
+
+                <p class="metric-change">
+                    Clinical evidence available
+                </p>
+
+            </div>
+
+
+            <div class="metric-card">
+
+                <div class="metric-top">
+
+                    <span>
+                        Largest Area
+                    </span>
+
+                    <span class="metric-symbol">
+                        ◎
+                    </span>
+
+                </div>
+
+                <strong>
+                    {% if top_area %}
+                        {{ top_area["compound_count"] }}
+                    {% else %}
+                        —
+                    {% endif %}
+                </strong>
+
+                <p class="metric-change">
+                    {% if top_area %}
+                        {{ top_area["name"] }}
+                    {% else %}
+                        No data available
+                    {% endif %}
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <section class="panel database-panel">
+
+            <div class="panel-header">
+
+                <div>
+
+                    <p class="panel-label">
+                        THERAPEUTIC DATA
+                    </p>
+
+                    <h3>
+                        Indications and Disease Areas
+                    </h3>
+
+                    <p class="panel-description">
+                        Showing {{ total_areas }} matching therapeutic areas
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="table-wrapper">
+
+                <table class="therapeutic-areas-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                THERAPEUTIC AREA
+                            </th>
+
+                            <th>
+                                COMPOUNDS
+                            </th>
+
+                            <th>
+                                CLINICAL STUDIES
+                            </th>
+
+                            <th>
+                                ACTIVE STUDIES
+                            </th>
+
+                            <th>
+                                EXPLORE
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        {% for area in areas %}
+
+                        <tr>
+
+                            <td>
+
+                                <strong>
+                                    {{ area["name"] }}
+                                </strong>
+
+                            </td>
+
+
+                            <td>
+                                {{ area["compound_count"] }}
+                            </td>
+
+
+                            <td>
+                                {{ area["trial_count"] }}
+                            </td>
+
+
+                            <td>
+                                {{ area["active_trial_count"] }}
+                            </td>
+
+
+                            <td>
+
+                                <a
+                                    href="{{ url_for(
+                                        'home',
+                                        indication=area['name']
+                                    ) }}"
+                                    class="source-link"
+                                >
+                                    View compounds →
+                                </a>
+
+                            </td>
+
+                        </tr>
+
+                        {% else %}
+
+                        <tr>
+
+                            <td
+                                colspan="5"
+                                class="empty"
+                            >
+                                No therapeutic areas match those filters.
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+            {% if total_pages > 1 %}
+
+            <div class="compound-table-footer">
+
+                <div class="compound-count">
+
+                    Showing
+
+                    <strong>
+                        {{ ((page - 1) * per_page) + 1 }}
+                    </strong>
+
+                    –
+
+                    <strong>
+                        {{ [page * per_page, total_areas] | min }}
+                    </strong>
+
+                    of
+
+                    <strong>
+                        {{ total_areas }}
+                    </strong>
+
+                </div>
+
+
+                <div class="pagination">
+
+                    {% if page > 1 %}
+
+                    <a
+                        href="{{ url_for(
+                            'therapeutic_areas',
+                            page=page - 1,
+                            q=area_query,
+                            studies=study_filter,
+                            sort=sort_order
+                        ) }}"
+                        class="page-button"
+                    >
+                        ←
+                    </a>
+
+                    {% endif %}
+
+
+                    {% for page_number in range(1, total_pages + 1) %}
+
+                        {% if
+                            page_number == 1
+                            or page_number == total_pages
+                            or (
+                                page_number >= page - 2
+                                and page_number <= page + 2
+                            )
+                        %}
+
+                        <a
+                            href="{{ url_for(
+                                'therapeutic_areas',
+                                page=page_number,
+                                q=area_query,
+                                studies=study_filter,
+                                sort=sort_order
+                            ) }}"
+                            class="
+                                page-button
+                                {% if page_number == page %}
+                                    active-page
+                                {% endif %}
+                            "
+                        >
+                            {{ page_number }}
+                        </a>
+
+                        {% elif
+                            page_number == page - 3
+                            or page_number == page + 3
+                        %}
+
+                        <span class="page-dots">
+                            ...
+                        </span>
+
+                        {% endif %}
+
+                    {% endfor %}
+
+
+                    {% if page < total_pages %}
+
+                    <a
+                        href="{{ url_for(
+                            'therapeutic_areas',
+                            page=page + 1,
+                            q=area_query,
+                            studies=study_filter,
+                            sort=sort_order
+                        ) }}"
+                        class="page-button"
+                    >
+                        →
+                    </a>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+            {% endif %}
+
+        </section>
+
+
+        <footer>
+
+            <span>
+                DRID is an educational research dashboard.
+            </span>
+
+            <span>
+                Data sources: openFDA, ChEMBL, ClinicalTrials.gov
+            </span>
+
+        </footer>
+
+    </main>
+
+</body>
+
+</html>
